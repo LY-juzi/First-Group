@@ -3,7 +3,7 @@
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-28 14:56:40
+ * @Last Modified time: 2019-12-28 15:20:05
  */
 <template>
   <div id="waiterList">
@@ -11,7 +11,7 @@
     {{statusData}} -->
     <!-- 搜索框 -->
     <div class="searchDiv">
-      <el-select @change="provinceChange" size="mini" v-model="status" clearable placeholder="在线">
+      <el-select @change="statusChange" size="mini" v-model="status" clearable placeholder="在线">
         <el-option
           v-for="item in statusData"
           :key="item"
@@ -19,7 +19,7 @@
           :value="item">
           </el-option>
       </el-select>
-      <el-select @change="cityChange" size="mini" v-model="gender" clearable placeholder="性别">
+      <el-select @change="genderChange" size="mini" v-model="gender" clearable placeholder="性别">
         <el-option v-for="item in genderData"
          :key="item"
          :label="item"
@@ -163,7 +163,7 @@ export default {
         }
       });
     },
-    //模态框省份发生改变
+    //模态框  省份发生改变
     async dialogProChange(val) {
       // console.log(val);
       //重置城市下拉列表
@@ -190,14 +190,14 @@ export default {
       //val 是option的value值
       if (val) {
         try {
-          let res = await findBusinessByCity({ city: val });
-          this.businessData = res.data;
+          let res = await findByStatus({ city: val });
+          this.customerData = res.data;
           this.currentPage = 1;
         } catch (error) {
-          config.errorMsg(this, "通过城市查找商家信息错误");
+          config.errorMsg(this, "通过状态查找商家信息错误");
         }
       } else {
-        this.findAllBus();
+        this.findAllCus();
       }
     },
     
