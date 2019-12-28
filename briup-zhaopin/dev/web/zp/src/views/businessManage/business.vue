@@ -3,7 +3,7 @@
  * 商家列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-27 15:42:50
+ * @Last Modified time: 2019-12-27 11:36:09
  */
 <template>
   <div id="businessList">
@@ -96,7 +96,7 @@
       </div>
     </el-dialog>
     <!-- 修改模态框 -->
-    <el-dialog title="修改商家信息" :visible.sync="editVisible" width="60%" :before-close="beforeClose">
+    <el-dialog title="修改商家信息" :visible.sync="editVisible" width="60%">
       <el-form :model="currentBus" :rules="rules" ref="ruleForm">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -184,7 +184,7 @@
         </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="toCancel('ruleForm')">取 消</el-button>
+        <el-button size="mini" @click="editVisible = false">取 消</el-button>
         <el-button size="mini" type="primary" @click="toSave('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
@@ -279,17 +279,6 @@ export default {
     }
   },
   methods: {
-    //右上角，模态框关闭之前
-    beforeClose() {
-      this.$refs["ruleForm"].resetFields();
-      this.editVisible = false;
-    },
-    //关闭模态框
-    toCancel(formName) {
-      //重置表单验证，关闭模态框
-      this.$refs[formName].resetFields();
-      this.editVisible = false;
-    },
     //保存
     toSave(formName) {
       this.$refs[formName].validate(async valid => {
