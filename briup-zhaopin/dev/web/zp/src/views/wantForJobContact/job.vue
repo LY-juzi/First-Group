@@ -3,7 +3,7 @@
  * 求职列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: yanzh
- * @Last Modified time: 2019-12-28 11:26:06
+ * @Last Modified time: 2019-12-28 15:05:06
  */
 <template>
   <div id="jobList">
@@ -77,8 +77,8 @@
   </div>
 </template>
 <script>
-//引入方法
-import { findAllWithJobhAndEmpl } from "@/api/employment.js";
+//employment-jobhunter引入方法
+import { findAllWithJobhAndEmpl } from "@/api/employment-jobhunter.js";
 
 export default {
   data() {
