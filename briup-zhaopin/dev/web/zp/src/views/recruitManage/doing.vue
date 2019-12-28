@@ -3,7 +3,7 @@
  * 招聘中页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-28 16:14:26
+ * @Last Modified time: 2019-12-28 19:07:04
  */
 <template>
   <div id="recruitDoing">
@@ -124,7 +124,17 @@
         </el-row>
 
         <el-form-item label="职业标签" :label-width="formLabelWidth" prop="welfare">
-          <el-input v-model="showData.welfare" placeholder="可以手动输入，使用空格分开"></el-input>
+          <el-select
+           style="width:100%"
+            v-model="showData.welfare"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="请选择职业标签"
+          >
+            <el-option v-for="item in allWelfare" :key="item" :label="item" :value="item"></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="工作时间" :label-width="formLabelWidth" prop="workingHours">
@@ -156,7 +166,8 @@
           <span>{{showData.province}}-{{showData.city}}-{{showData.location}}</span>
         </div>
         <div class="seeDiv">
-          <button disabled="disabled">五险一金</button>
+          <button disabled="disabled" v-for="(item,index) in welfareList" :key="index">{{item}}</button>
+
           <span class="businessName">{{showData.businessName}}</span>
         </div>
         <hr />
@@ -166,6 +177,7 @@
         </div>
       </el-dialog>
     </div>
+
   </div>
 </template>
 
@@ -179,18 +191,23 @@ import {
 import config from "@/utils/config.js";
 import { findAllJobs } from "@/api/job.js";
 import { findAllBusiness, findBusinessById } from "@/api/business.js";
+import { findAllWelfare } from "@/api/welfare";
 
 export default {
   data() {
     return {
       rules: {
-        contactPhone: [{ required: true, message: "请输入联系人电话", trigger: "blur" }],
-        contactName: [{ required: true, message: "请输入联系人姓名", trigger: "blur" }],
+        contactPhone: [
+          { required: true, message: "请输入联系人电话", trigger: "blur" }
+        ],
+        contactName: [
+          { required: true, message: "请输入联系人姓名", trigger: "blur" }
+        ],
         title: [{ required: true, message: "请输入兼职名称", trigger: "blur" }],
         job: [{ required: true, message: "请输入工种信息", trigger: "change" }],
         num: [{ required: true, message: "请输入招聘人数", trigger: "blur" }],
         businessId: [
-          { required: true, message: "请输入招聘公司", trigger: "change" },
+          { required: true, message: "请输入招聘公司", trigger: "change" }
         ],
         salary: [
           { required: true, message: "请输入薪资水平", trigger: "blur" }
@@ -223,7 +240,9 @@ export default {
       dialogTableVisible: false,
       dialogFormVisible: false,
       formLabelWidth: "90px",
-      currentPage: 1
+      currentPage: 1,
+      welfareList: [],
+      allWelfare: []
     };
   },
   computed: {
@@ -235,30 +254,41 @@ export default {
     }
   },
   methods: {
-     toSave() {
-      this.dialogFormVisible = false;
-        this.$refs['ruleForm'].validate(async(valid) => {
-          if (valid) {
-            delete this.showData.startTime;
-            delete this.showData.endTime;
-            delete this.showData.publishTime;
-            this.showData.status = '审核通过';
-              try {
-                await saveOrUpdateEmployment(this.showData);
-                config.successMsg(this,"操作成功")
-              } catch (error) {
-                config.errorMsg(this,'修改招聘信息失败');
-              }
-              this.findEmploymentData();
-              this.$refs["ruleForm"].resetFields();
-              
-            } else {
-            console.log('error submit!!');
-            return false;
-          }
+    async findAllWelfare() {
+      try {
+        let welfares = await findAllWelfare();
+        welfares = welfares.data.filter(item => {
+          return item.status === "使用中";
         });
-      
-      
+        this.allWelfare = welfares.map(item => {
+          return item.name;
+        });
+      } catch (error) {
+        config.errorMsg(this, "查找数据库中的福利失败");
+      }
+    },
+    toSave() {
+      this.dialogFormVisible = false;
+      this.$refs["ruleForm"].validate(async valid => {
+        if (valid) {
+          delete this.showData.startTime;
+          delete this.showData.endTime;
+          delete this.showData.publishTime;
+          this.showData.status = "审核通过";
+          try {
+            await saveOrUpdateEmployment(this.showData);
+            config.successMsg(this, "操作成功");
+          } catch (error) {
+              console.log(error,'--------');
+            config.errorMsg(this, "修改招聘信息失败");
+          }
+          this.findEmploymentData();
+          this.$refs["ruleForm"].resetFields();
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     beforeClose(done) {
       this.$refs["ruleForm"].resetFields();
@@ -286,6 +316,8 @@ export default {
 
     async toSee(row) {
       this.showData = row;
+      this.welfareList = row.welfare.split(",");
+      console.log(row.welfare,this.welfareList);
       try {
         let business = await findBusinessById({ id: this.showData.businessId });
         this.showData.businessName = business.data.name;
@@ -304,7 +336,7 @@ export default {
       this.dialogFormVisible = true;
       this.showData = row;
       console.log(row);
-      },
+    },
 
     toDelete(id) {
       this.$confirm("是否删除该记录?", "提示", {
@@ -371,34 +403,14 @@ export default {
       }
     },
 
-    async deleteSelected() {
-      try {
-        this.deleteList.forEach(item => {
-          let id = item.id;
-          deleteEmploymentById({ id });
-        });
-        config.successMsg(this, "删除成功");
-        this.findEmploymentData();
-      } catch (error) {
-        config.errorMsg(this, "删除失败");
-      }
-    },
+   
 
     handleSelectionChange(val) {
       this.ids = val.map(item => {
         return item.id;
       });
     },
-    async deleteRow(item) {
-      try {
-        let id = item.id;
-        deleteEmploymentById({ id });
-        config.successMsg(this, "删除成功");
-        this.findEmploymentData();
-      } catch (error) {
-        config.errorMsg(this, error);
-      }
-    },
+    
     currentChange(val) {
       this.currentPage = val;
     },
@@ -437,6 +449,7 @@ export default {
     this.findEmploymentData();
     this.findJobsData();
     this.findBusinessData();
+    this.findAllWelfare();
   },
   mounted() {}
 };

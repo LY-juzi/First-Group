@@ -3,7 +3,7 @@
  * 招聘完结页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-28 16:13:37
+ * @Last Modified time: 2019-12-28 19:05:58
  */
 <template>
   <div id="recruitFinish">
@@ -29,9 +29,9 @@
           </template>
         </el-table-column>
         <el-table-column align="center" label="状态" width="120">
-          <!-- <template slot-scope="scope"> -->
-          <el-button type="text" size="small">已完结</el-button>
-          <!-- </template> -->
+          <template slot-scope="scope">
+            <el-button type="text" size="small" disabled>已完结</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </template>
@@ -66,7 +66,7 @@
           <span>{{showData.province}}-{{showData.city}}-{{showData.location}}</span>
         </div>
         <div class="seeDiv">
-          <button disabled="disabled">五险一金</button>
+          <button disabled="disabled" v-for="(item,index) in welfareList" :key="index">{{item}}</button>
           <span class="businessName">{{showData.businessName}}</span>
         </div>
         <hr />
@@ -142,8 +142,18 @@
           </el-col>
         </el-row>
 
-        <el-form-item label="职业标签" :label-width="formLabelWidth" prop="welfare">
-          <el-input v-model="showData.welfare" placeholder="可以手动输入，使用空格分开"></el-input>
+        <el-form-item label="职业标签" :label-width="formLabelWidth">
+          <el-select
+           style="width:100%"
+            v-model="showData.welfare"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="请选择职业标签"
+          >
+            <el-option v-for="item in allWelfare" :key="item" :label="item" :value="item"></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="工作时间" :label-width="formLabelWidth" prop="workingHours">
@@ -171,6 +181,7 @@ import {
 import { findAllJobs } from "@/api/job.js";
 import { findBusinessById, findAllBusiness } from "@/api/business.js";
 import config from "@/utils/config.js";
+import { findAllWelfare } from "@/api/welfare";
 export default {
   data() {
     return {
@@ -214,7 +225,9 @@ export default {
         description: [
           { required: true, message: "请输入职位描述", trigger: "blur" }
         ]
-      }
+      },
+      welfareList: [],
+      allWelfare: []
     };
   },
   computed: {
@@ -227,6 +240,19 @@ export default {
     }
   },
   methods: {
+    async findAllWelfare() {
+      try {
+        let welfares = await findAllWelfare();
+        welfares = welfares.data.filter(item => {
+          return item.status === "使用中";
+        });
+        this.allWelfare = welfares.map(item => {
+          return item.name;
+        });
+      } catch (error) {
+        config.errorMsg(this, "查找数据库中的福利失败");
+      }
+    },
     beforeClose(done) {
       this.$refs["ruleForm"].resetFields();
       done();
@@ -266,6 +292,7 @@ export default {
     },
     async toSee(row) {
       this.showData = row;
+      this.welfareList = row.welfare.split(",");
       console.log(this.showData.businessId);
       try {
         let business = await findBusinessById({ id: this.showData.businessId });
@@ -325,6 +352,7 @@ export default {
     this.findEmploymentData();
     this.findJobsData();
     this.findBusinessData();
+    this.findAllWelfare();
   },
   mounted() {}
 };
