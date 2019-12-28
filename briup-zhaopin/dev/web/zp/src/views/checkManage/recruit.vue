@@ -3,7 +3,7 @@
  * 招聘审核页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: lijunkun
- * @Last Modified time: 2019-12-28 17:07:52
+ * @Last Modified time: 2019-12-28 20:04:09
  */
 <template>
   <div id="recruitCheck">
@@ -22,7 +22,7 @@
     <div class="tableDiv">
        <el-table
     ref="multipleTable"
-    :data="recruitData"
+    :data="recruitCheck"
     tooltip-effect="dark"
     style="width: 100%"
     @selection-change="handleSelectionChange">
@@ -66,6 +66,18 @@
           
         </el-table-column>
   </el-table>
+
+  <div class="pageDiv">
+        <el-pagination
+          :page-size="pageSize"
+          :current-page.sync="currentPage"
+          background
+          @current-change="pageChange"
+          layout="prev, pager, next"
+          :total="recruitData.length"
+        ></el-pagination>
+      </div>
+
   <!-- 查看模态框 -->
    <el-dialog :title="currentBus.title" :visible.sync="seeVisible" >
       <div class="seeDiv">
@@ -121,6 +133,7 @@ export default {
       currentBus: {},
       recruitL:"",
       recruitData:[],
+      // recruitCheck:[],
       seeVisible: false,
       //当前页
       currentPage: 1,
@@ -129,8 +142,8 @@ export default {
     };
   },
   computed: {
-    businessList() {
-      let temp = [...this.businessData];
+    recruitCheck() {
+      let temp = [...this.recruitData];
       let page = this.currentPage;
       let pageSize = config.pageSize;
       return temp.slice((page - 1) * pageSize, page * pageSize);
@@ -149,6 +162,8 @@ export default {
         try {
           let res = await findEmploymentByJob({ job: val });
           this.recruitData = res.data;
+          this.currentPage = 1;
+
           
         } catch (error) {
           config.errorMsg(this, "通过职位查找招聘信息错误");
@@ -199,6 +214,9 @@ export default {
     float: right;
   }
 }
+.pageDiv {
+    float: right;
+  }
 .seeDiv {
   border-bottom: 1px solid #ccc;
   line-height: 30px;
