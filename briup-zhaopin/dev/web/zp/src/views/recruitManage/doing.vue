@@ -2,8 +2,13 @@
  * @Author: liuyr 
  * 招聘中页面
  * @Date: 2019-12-23 17:03:30 
+<<<<<<< HEAD
  * @Last Modified by: lijunkun
  * @Last Modified time: 2019-12-29 19:39:01
+=======
+ * @Last Modified by: wuhuilan
+ * @Last Modified time: 2019-12-29 18:44:10
+>>>>>>> 6e4915d49f8da434a39493496c53e59bf8e6a121
  */
 <template>
   <div id="recruitDoing">
@@ -355,7 +360,7 @@ export default {
             let res = await deleteEmploymentById({ id: id });
             if (res.status === 200) {
               config.successMsg(this, "删除成功");
-              this.findAllEmployment();
+              this.findEmploymentData();
             } else {
               config.errorMsg(this, "删除失败");
             }
