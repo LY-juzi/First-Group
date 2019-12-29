@@ -3,7 +3,7 @@
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 16:04:31
+ * @Last Modified time: 2019-12-29 18:36:00
  */
 <template>
   <div id="businessList">
@@ -29,7 +29,7 @@
     </div>
     <div class="btn">
         <!-- 按钮 -->
-        <el-button @click="toEdit" class="butt" size="mini" type="primary" icon="el-icon-info" style="background:rgb(235, 108, 50)">添加客服</el-button>
+        <el-button @click="addWaiter" class="butt" size="mini" type="primary" icon="el-icon-info" style="background:rgb(235, 108, 50)">添加客服</el-button>
         <el-button @click="Import" class="butt" size="mini" type="primary" icon="el-icon-info">导入客服</el-button>
       </div>
       <!-- 按关键字搜索 -->
@@ -84,34 +84,28 @@
       </div>
     </div>
 <!-- 修改模态框 -->
-    <el-dialog title="添加客服" :visible.sync="editVisible" width="60%" :before-close="beforeClose">
-      <el-form :model="currentBus" :rules="rules" ref="ruleForm">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item prop="username" label="用户名" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.name"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item prop="username" label="手机号" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.industry"></el-input>
-            </el-form-item>
-          </el-col>
-          </el-row>
-          <el-row>
-          <el-col :span="12">
-            <el-form-item prop="gender" label="性别" :label-width="formLabelWidth">
-              <el-checkbox label="男"></el-checkbox>
-              <el-checkbox label="女"></el-checkbox>
-            </el-form-item>
-          </el-col>
-        </el-row>
+     <el-dialog title="添加客服信息" :visible.sync="addWai">
+      <el-form :model="addform" :rules="rules" ref="ruleForm">
+        <el-form-item prop="username" label="用户名" :label-width="formLabelWidth" >
+          <el-input v-model="addform.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop="realname" label="姓名" :label-width="formLabelWidth">
+          <el-input v-model="addform.realname" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop="gender" label="性别" :label-width="formLabelWidth">
+          <el-select clearable v-model="addform.gender" placeholder="请选择性别">
+           <el-option v-for="item in genderData" :key="item"  :label="item" :value="item"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="status" label="状态" :label-width="formLabelWidth">
+           <el-select clearable v-model="addform.status" placeholder="请选择状态">
+             <el-option v-for="item in statusData" :key="item"  :label="item" :value="item"></el-option>
+           </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="toCancel('ruleForm')">取 消</el-button>
-        <el-button size="mini" type="primary" @click="toSave('ruleForm')">确 定</el-button>
+        <el-button @click="toCancel('ruleForm')">取 消</el-button>
+        <el-button type="primary" @click="toSave('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -119,12 +113,34 @@
 </template>
 
 <script>
-import { findAllCustomer,deleteById,findByStatus,findByGender,findById,findByUsername} from "@/api/customer-service.js";
+import { findAllCustomer,deleteById,findByStatus,findByGender,findById,findByUsername,saveOrUpdate} from "@/api/customer-service.js";
 import config from "@/utils/config.js";
 export default {
   data() {
     return {
-      
+      rules: {
+          username: [
+            { required: true, message: '请输入用户名', trigger: 'blur' },
+          ],
+          realname:[
+            { required: true, message: '请输入真实姓名', trigger: 'blur' },
+          ],
+          gender:[
+            { required: true, message: '请输入性别', trigger: 'blur' },
+          ],
+          status:[
+            { required: true, message: '请输入状态', trigger: 'blur' },
+          ],
+         
+        },
+     addWai: false,
+        addform: {
+          username: '',
+          realname: '',
+          gender: '',
+          status: '',  
+        },
+         addWai:false,
       //状态
       status: "",
       //性别
@@ -169,6 +185,8 @@ export default {
     },
     //搜索功能
     async tofind(inputvalue){
+      this.gender = "";
+      this.status = "";
       if(this.searchType === "username"){
         if(inputvalue){
           
@@ -200,17 +218,7 @@ export default {
       }
       
     },
-    //右上角，模态框关闭之前
-    beforeClose() {
-      this.$refs["ruleForm"].resetFields();
-      this.editVisible = false;
-    },
-    //关闭模态框
-    toCancel(formName) {
-      //重置表单验证，关闭模态框
-      this.$refs[formName].resetFields();
-      this.editVisible = false;
-    },
+    
     // 页数发生改变
     pageChange(page) {
       this.currentPage = page;
@@ -249,13 +257,52 @@ export default {
         this.findAllCus();
       }
     },
-
-  //编辑
-    toEdit(row) {
-      this.currentBus = { ...row };
-      this.editVisible = true;
+    //右上角，模态框关闭之前
+    beforeClose(){
+      //重置表单验证，关闭模态框
+      this.$refs["ruleForm"].resetFields();
+      this.addWai = false;
     },
-
+    //关闭模态框
+    toCancel(formName) {
+      //重置表单验证，关闭模态框
+      this.$refs[formName].resetFields();
+      this.addWai = false;
+    },
+    //保存
+      toSave(formName) {
+      this.$refs[formName].validate(async valid => {
+        if (valid) {
+          //保存
+          try {
+            let res = await saveOrUpdate(this.addform);
+            if (res.status === 200) {
+              this.findAllCus();
+              this.addWai = false;
+              config.successMsg(this, "添加成功");
+            } else {
+              config.errorMsg(this, "添加失败");
+            }
+          } catch (error) {
+            console.log(error);
+            config.errorMsg(this, "添加失败");
+          }
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    //添加客服
+    addWaiter(){
+      this.addWai =true;
+      this.addform={}
+    },
+  
+   Import(){
+  //  alert("暂未开发");
+  config.tanchuangMsg(this, "暂未开发");
+   },
     //删除
     toDelete(id) {
       // alert("删除");

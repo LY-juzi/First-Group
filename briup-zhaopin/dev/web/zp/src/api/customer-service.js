@@ -2,7 +2,7 @@
  * @Author: liuyr 
  * @Date: 2019-12-27 16:29:05 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 14:19:21
+ * @Last Modified time: 2019-12-29 18:20:51
  */
 import axios from '@/utils/axios'
 /**
@@ -48,4 +48,11 @@ export function findById(param) {
  */
 export function findByUsername(param) {
     return axios.get('/CustomerService/findByUsername', {params:param});
+}
+/**
+ * 通过用户名查找客服信息
+ * @param {Object} param {id:''} 
+ */
+export function saveOrUpdate(param) {
+    return axios.post('/CustomerService/saveOrUpdate', param);
 }
