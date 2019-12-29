@@ -3,7 +3,7 @@
  * 招聘中页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 15:46:22
+ * @Last Modified time: 2019-12-29 16:12:24
  */
 <template>
   <div id="recruitDoing">
@@ -268,7 +268,6 @@ export default {
     },
     toSave() {
       this.dialogFormVisible = false;
-      this.showData.welfareDialog=[];
       this.$refs["ruleForm"].validate(async valid => {
         if (valid) {
           delete this.showData.startTime;
@@ -277,8 +276,8 @@ export default {
           this.showData.status = "审核通过";
           if(this.showData.welfareDialog){
              this.showData.welfare = this.showData.welfareDialog.toString();
+             this.showData.welfareDialog=[];
           }
-
           delete this.showData.welfareDialog;
           try {
             await saveOrUpdateEmployment(this.showData);
@@ -329,7 +328,7 @@ export default {
       this.seeVisible = true;
     },
     toNew() {
-      this.$refs["ruleForm"].resetFields();
+      // this.$refs["ruleForm"].resetFields();
       this.title = "发布职位";
       this.dialogFormVisible = true;
       this.showData = {};

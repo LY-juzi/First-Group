@@ -3,7 +3,7 @@
  * 招聘完结页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 15:43:20
+ * @Last Modified time: 2019-12-29 16:15:52
  */
 <template>
   <div id="recruitFinish">
@@ -146,7 +146,7 @@
           <el-select
           @change="a"
            style="width:100%"
-            v-model="showData.welfare"
+            v-model="showData.welfareDialog"
             multiple
             filterable
             allow-create
@@ -157,7 +157,7 @@
         </el-form-item>
 
         <el-form-item label="工作时间" :label-width="formLabelWidth" prop="workingHours">
-          <el-input v-model="showData.workingHours" placeholder="可以手动输入，使用空格分开"></el-input>
+          <el-input v-model="showData.workingHours" placeholder="请输入工作时间"></el-input>
         </el-form-item>
 
         <el-form-item label="职位描述" :label-width="formLabelWidth" prop="description">
@@ -268,7 +268,8 @@ export default {
         alert(error);
       }
     },
-    toSave() {
+
+   toSave() {
       this.dialogFormVisible = false;
       this.$refs["ruleForm"].validate(async valid => {
         if (valid) {
@@ -276,12 +277,18 @@ export default {
           delete this.showData.endTime;
           delete this.showData.publishTime;
           this.showData.status = "审核通过";
+          if(this.showData.welfareDialog){
+             this.showData.welfare = this.showData.welfareDialog.toString();
+             this.showData.welfareDialog=[];
+          }
+          delete this.showData.welfareDialog;
           try {
             await saveOrUpdateEmployment(this.showData);
             config.successMsg(this, "操作成功");
           } catch (error) {
-            config.errorMsg(this, "操作失败失败");
+            config.errorMsg(this, "发布招聘信息失败");
           }
+          this.findEmploymentData();
           this.$refs["ruleForm"].resetFields();
         } else {
           console.log("error submit!!");
@@ -289,11 +296,12 @@ export default {
         }
       });
     },
+
+   
     toNew() {
       this.dialogFormVisible = true;
       this.showData = {};
       this.showData.welfareDialog=[];
-      
     },
     async toSee(row) {
       this.showData = row;
