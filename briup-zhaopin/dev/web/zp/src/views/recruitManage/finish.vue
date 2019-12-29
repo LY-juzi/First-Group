@@ -3,7 +3,7 @@
  * 招聘完结页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 16:15:52
+ * @Last Modified time: 2019-12-29 18:44:11
  */
 <template>
   <div id="recruitFinish">
@@ -16,7 +16,7 @@
       <el-button size="small" type="primary" class="el-icon-info btn2">导入职位</el-button>
     </el-row>
     <template>
-      <el-table :data="finishDataList" style="width: 100%" class="table">
+      <el-table :data="finishDataList" style="width: 100%" class="table" @selection-change="handleSelectionChange">
         <el-table-column align="center" type="selection" width="55"></el-table-column>
         <el-table-column align="center" prop="title" label="招聘标题" width="220"></el-table-column>
         <el-table-column align="center" prop="contactName" label="发布人" width="150"></el-table-column>
@@ -37,7 +37,7 @@
     </template>
     <div class="footDiv">
       <div class="btnDiv">
-        <el-button size="mini" class="delete-btn">删除</el-button>
+        <el-button size="mini" class="delete-btn"  @click="toBatchDelete">删除</el-button>
       </div>
       <div class="pagiDiv">
         <el-pagination
@@ -176,7 +176,8 @@
 import {
   findAllEmployment,
   findEmploymentByJob,
-  saveOrUpdateEmployment
+  saveOrUpdateEmployment,
+  deleteEmploymentById
 } from "@/api/employment.js";
 import { findAllJob } from "@/api/job.js";
 import { findBusinessById, findAllBusiness } from "@/api/business.js";
@@ -185,6 +186,7 @@ import { findAllWelfare } from "@/api/welfare";
 export default {
   data() {
     return {
+      ids:[],
       status:"",
       seeVisible: false,
       finishData: [],
@@ -242,6 +244,51 @@ export default {
   methods: {
     a(x){
       this.$forceUpdate();
+    },
+
+    handleSelectionChange(val) {
+      this.ids = val.map(item => {
+        return item.id;
+      });
+    },
+    
+
+     toBatchDelete() {
+      if (this.ids.length > 0) {
+        this.$alert("是否确认删除", "提示", {
+          confirmButtonText: "删除",
+          callback: action => {
+            if (action === "confirm") {
+              let results = [];
+              this.ids.forEach(async id => {
+                try {
+                  let res = await deleteEmploymentById({ id: id });
+                  results.push(res.status);
+                } catch (error) {
+                  results.push(500);
+                }
+              });
+              setTimeout(() => {
+                // 判断是否都是200
+                let result = results.every(item => {
+                  return item === 200;
+                });
+                if (result) {
+                  config.successMsg(this, "批量删除成功");
+                } else {
+                  config.errorMsg(this, "批量删除失败");
+                }
+                this.findEmploymentData();
+              }, 2000);
+            }
+          }
+        });
+      } else {
+        this.$message({
+          message: "请选中要删除的数据",
+          type: "warning"
+        });
+      }
     },
     async findAllWelfare() {
       try {
