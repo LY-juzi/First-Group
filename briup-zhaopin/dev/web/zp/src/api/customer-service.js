@@ -1,8 +1,8 @@
 /*
  * @Author: liuyr 
  * @Date: 2019-12-27 16:29:05 
- * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-28 16:14:58
+ * @Last Modified by: wuhuilan
+ * @Last Modified time: 2019-12-29 09:38:50
  */
 import axios from '@/utils/axios'
 /**
@@ -10,7 +10,7 @@ import axios from '@/utils/axios'
  * @param {Object} param {id:''} 
  */
 export function deleteById(param) {
-  return axios.post('/CustomerService/deleteById', param);
+    return axios.post('/CustomerService/deleteById', param);
 }
 /**
  * 查找所有客服信息
@@ -18,18 +18,18 @@ export function deleteById(param) {
  */
 export function findAllCustomer(param) {
     return axios.get('/CustomerService/findAll', param);
-  }
+}
 /**
  * 通过状态查找客服信息
  * @param {Object} param {id:''} 
  */
-    export function findByStatus(param) {
-    return axios.get('/CustomerService/findByEducation', {params:param});
+export function findByStatus(param) {
+    return axios.get('/CustomerService/findByEducation', { params: param });
 }
 /**
  * 通过性别查找客服信息
  * @param {Object} param {id:''} 
  */
 export function findByGender(param) {
-    return axios.get('/CustomerService/findByGender', {params:param});
+    return axios.get('/CustomerService/findByGender', { params: param });
 }

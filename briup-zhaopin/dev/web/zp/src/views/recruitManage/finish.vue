@@ -3,7 +3,7 @@
  * 招聘完结页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 08:53:50
+ * @Last Modified time: 2019-12-29 10:02:15
  */
 <template>
   <div id="recruitFinish">
@@ -28,9 +28,9 @@
             <el-button @click.native.prevent="toSee(scope.row)" type="text" size="small">查看</el-button>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="状态" width="120">
-          <template slot-scope="scope">
-            <el-button type="text" size="small" disabled>已完结</el-button>
+        <el-table-column align="center" label="状态" width="120" prop="status">
+          <template>
+            <el-button type="text" size="small" disabled>{{status}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -185,6 +185,7 @@ import { findAllWelfare } from "@/api/welfare";
 export default {
   data() {
     return {
+      status:"",
       seeVisible: false,
       finishData: [],
       value: "",
