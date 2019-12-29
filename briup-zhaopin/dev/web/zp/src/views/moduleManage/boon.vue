@@ -3,7 +3,7 @@
  * 福利管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: luy
- * @Last Modified time: 2019-12-27 19:35:28
+ * @Last Modified time: 2019-12-29 09:39:01
  */
 <template>
   <div id="moduleBoon">
@@ -19,6 +19,7 @@
         :data="welfareList"
         tooltip-effect="dark"
         style="width: 80%"
+        :header-cell-style="{background:'#87CEEB',color:'#FFFFFF'}"
         @selection-change="handleSelectionChange"
       >
         <el-table-column align="center" type="selection" width="40"></el-table-column>
@@ -57,13 +58,18 @@
 
 <script>
 import config from "@/utils/config.js"; //import的config是一个对象
-import {  findAllWelfare,  saveOrUpdateWelfare,  findWelfareById,  deleteById} from "@/api/welfare.js";
+import {
+  findAllWelfare,
+  saveOrUpdateWelfare,
+  findWelfareById,
+  deleteWelfareById
+} from "@/api/welfare.js";
 
 export default {
   data() {
     return {
       options: ["全部", "使用中", "被冻结"],
-      option: "",
+      option: "全部",
       // 福利数组
       welfareData: [],
       // 副本福利数组
@@ -73,13 +79,14 @@ export default {
       // 每页条数
       pageSize: config.pageSize,
       //批量删除ids
-      ids: [],
+      ids: []
     };
   },
   computed: {
     // 分页数据
     welfareList() {
-      let temp = [...this.welfareTemp];
+      // let temp = [...this.welfareTemp];
+      let temp = this.welfareTemp;
       let page = this.currentPage;
       let pageSize = config.pageSize;
       return temp.slice((page - 1) * pageSize, page * pageSize);
@@ -105,13 +112,17 @@ export default {
     },
 
     // 状态改变后筛选数据
-    findStatusChange(){
-      if(option!=""){
-          this.welfareData = this.findAllWel();
-          console.log(option);
-          this.welfareTemp = this.welfareData.filter( item => {
-            return item.status === option;
-          });
+    async findStatusChange() {
+      if (this.option === "全部") {
+        let res = await findAllWelfare();
+        // 要用[...res.data]一条条展开数据放入一个新的里面。直接等于会
+        this.welfareTemp = [...res.data];
+      }else{
+        // 重新获取所有数据
+        let res = await findAllWelfare();
+        this.welfareTemp = res.data.filter(item => {
+          return item.status === this.option;
+        });
       }
     },
 
@@ -120,12 +131,13 @@ export default {
       try {
         // {...temp}将row复制给temp，若是let temp = row为赋值，两个将指向同一块地址，一个改了另一个也会跟着变。
         // 复制是将复制出来的副本进行更改操作，传入后台，后台刷新上row
-        let { ...temp } = row;
+        // let { ...temp } = row;
+        let temp = {...row};
         temp.status = row["status"] === "使用中" ? "被冻结" : "使用中";
         // 将更改后的数据传入后台
         await saveOrUpdateWelfare(temp);
         // 刷新列表
-        this.findStatusChange(temp);
+        this.findStatusChange();
         // 提示框
         config.successMsg(this, "操作成功");
       } catch (error) {
@@ -173,7 +185,7 @@ export default {
               let result = [];
               ids.forEach(async id => {
                 try {
-                  let res = await deleteById({ id: id });
+                  let res = await deleteWelfareById({ id: id });
                   result.push(res.status);
                 } catch (error) {
                   result.push(500);
@@ -190,7 +202,7 @@ export default {
                 } else {
                   config.errorMsg(this, "批量删除失败");
                 }
-                this.findAllWel();
+                this.findStatusChange();
               }, 2000);
             }
           }
@@ -201,7 +213,7 @@ export default {
           type: "warning"
         });
       }
-    },
+    }
   },
   created() {
     // 打开页面就调用的方法
