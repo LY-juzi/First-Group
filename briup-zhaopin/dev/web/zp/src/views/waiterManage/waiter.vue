@@ -3,7 +3,7 @@
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 14:18:40
+ * @Last Modified time: 2019-12-29 16:04:31
  */
 <template>
   <div id="businessList">
@@ -29,7 +29,7 @@
     </div>
     <div class="btn">
         <!-- 按钮 -->
-        <el-button @click="Add" class="butt" size="mini" type="primary" icon="el-icon-info" style="background:rgb(235, 108, 50)">添加客服</el-button>
+        <el-button @click="toEdit" class="butt" size="mini" type="primary" icon="el-icon-info" style="background:rgb(235, 108, 50)">添加客服</el-button>
         <el-button @click="Import" class="butt" size="mini" type="primary" icon="el-icon-info">导入客服</el-button>
       </div>
       <!-- 按关键字搜索 -->
@@ -83,8 +83,39 @@
         ></el-pagination>
       </div>
     </div>
-
+<!-- 修改模态框 -->
+    <el-dialog title="添加客服" :visible.sync="editVisible" width="60%" :before-close="beforeClose">
+      <el-form :model="currentBus" :rules="rules" ref="ruleForm">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item prop="username" label="用户名" :label-width="formLabelWidth">
+              <el-input v-model="currentBus.name"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item prop="username" label="手机号" :label-width="formLabelWidth">
+              <el-input v-model="currentBus.industry"></el-input>
+            </el-form-item>
+          </el-col>
+          </el-row>
+          <el-row>
+          <el-col :span="12">
+            <el-form-item prop="gender" label="性别" :label-width="formLabelWidth">
+              <el-checkbox label="男"></el-checkbox>
+              <el-checkbox label="女"></el-checkbox>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="toCancel('ruleForm')">取 消</el-button>
+        <el-button size="mini" type="primary" @click="toSave('ruleForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
+  
 </template>
 
 <script>
@@ -217,6 +248,12 @@ export default {
       } else {
         this.findAllCus();
       }
+    },
+
+  //编辑
+    toEdit(row) {
+      this.currentBus = { ...row };
+      this.editVisible = true;
     },
 
     //删除
