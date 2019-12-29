@@ -3,7 +3,7 @@
  * 招聘完结页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-28 19:05:58
+ * @Last Modified time: 2019-12-28 20:21:37
  */
 <template>
   <div id="recruitFinish">
@@ -178,7 +178,7 @@ import {
   findEmploymentByJob,
   saveOrUpdateEmployment
 } from "@/api/employment.js";
-import { findAllJobs } from "@/api/job.js";
+import { findAllJob } from "@/api/job.js";
 import { findBusinessById, findAllBusiness } from "@/api/business.js";
 import config from "@/utils/config.js";
 import { findAllWelfare } from "@/api/welfare";
@@ -233,7 +233,6 @@ export default {
   computed: {
     finishDataList() {
       let temp = [...this.finishData];
-      console.log(temp);
       let page = this.currentPage;
       let arr = temp.slice((page - 1) * 10, 10 * page);
       return arr;
@@ -292,11 +291,10 @@ export default {
     },
     async toSee(row) {
       this.showData = row;
+      console.log(row.welfare);
       this.welfareList = row.welfare.split(",");
-      console.log(this.showData.businessId);
       try {
         let business = await findBusinessById({ id: this.showData.businessId });
-        console.log(business);
         this.showData.businessName = business.data.name;
       } catch (error) {
         config.errorMsg(this, "通过id查找公司名失败");
@@ -309,12 +307,10 @@ export default {
     async changeJob(val) {
       if (val) {
         try {
-          console.log(val);
           let res = await findEmploymentByJob({ job: val });
           this.finishData = res.data.filter(item => {
             return item.status === "已完结";
           });
-          console.log(this.finishData);
         } catch (error) {
           // config.errorMsg(this, "通过职位类型查找招聘信息失败");
           config.errorMsg(this, error);
@@ -328,7 +324,7 @@ export default {
     },
     async findJobsData() {
       try {
-        let res = await findAllJobs();
+        let res = await findAllJob();
         this.jobsData = res.data.map(item => {
           return item.name;
         });

@@ -3,7 +3,7 @@
  * 招聘中页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-28 19:07:04
+ * @Last Modified time: 2019-12-28 20:32:19
  */
 <template>
   <div id="recruitDoing">
@@ -138,7 +138,7 @@
         </el-form-item>
 
         <el-form-item label="工作时间" :label-width="formLabelWidth" prop="workingHours">
-          <el-input v-model="showData.workingHours" placeholder="可以手动输入，使用空格分开"></el-input>
+          <el-input v-model="showData.workingHours" placeholder="请输入工作时间"></el-input>
         </el-form-item>
 
         <el-form-item label="职位描述" :label-width="formLabelWidth" prop="description">
@@ -177,7 +177,7 @@
         </div>
       </el-dialog>
     </div>
-
+  {{showData}}
   </div>
 </template>
 
@@ -189,7 +189,7 @@ import {
   saveOrUpdateEmployment
 } from "@/api/employment.js";
 import config from "@/utils/config.js";
-import { findAllJobs } from "@/api/job.js";
+import { findAllJob } from "@/api/job.js";
 import { findAllBusiness, findBusinessById } from "@/api/business.js";
 import { findAllWelfare } from "@/api/welfare";
 
@@ -279,7 +279,6 @@ export default {
             await saveOrUpdateEmployment(this.showData);
             config.successMsg(this, "操作成功");
           } catch (error) {
-              console.log(error,'--------');
             config.errorMsg(this, "修改招聘信息失败");
           }
           this.findEmploymentData();
@@ -298,14 +297,12 @@ export default {
       return cellValue.slice(0, 10);
     },
     async changeJob(val) {
-      console.log(val);
       if (val) {
         try {
           let res = await findEmploymentByJob({ job: val });
           this.doingData = res.data.filter(item => {
             return item.status === "审核通过";
           });
-          console.log(this.doingData);
         } catch (error) {
           config.errorMsg(this, "通过职位类型查找招聘信息失败");
         }
@@ -316,8 +313,9 @@ export default {
 
     async toSee(row) {
       this.showData = row;
-      this.welfareList = row.welfare.split(",");
-      console.log(row.welfare,this.welfareList);
+      console.log(row.welfare);
+        this.welfareList = row.welfare.split(",");
+      
       try {
         let business = await findBusinessById({ id: this.showData.businessId });
         this.showData.businessName = business.data.name;
@@ -335,7 +333,6 @@ export default {
       this.title = "修改招聘";
       this.dialogFormVisible = true;
       this.showData = row;
-      console.log(row);
     },
 
     toDelete(id) {
@@ -380,7 +377,6 @@ export default {
                 }
               });
               setTimeout(() => {
-                console.log(results);
                 // 判断是否都是200
                 let result = results.every(item => {
                   return item === 200;
@@ -416,7 +412,7 @@ export default {
     },
     async findJobsData() {
       try {
-        let res = await findAllJobs();
+        let res = await findAllJob();
         this.jobsData = res.data.map(item => {
           return item.name;
         });
