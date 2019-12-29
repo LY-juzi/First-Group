@@ -3,7 +3,7 @@
  * 招聘审核页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: lijunkun
- * @Last Modified time: 2019-12-28 20:04:09
+ * @Last Modified time: 2019-12-29 08:57:26
  */
 <template>
   <div id="recruitCheck">
@@ -65,6 +65,10 @@
     <el-table-column align="center" label="状态" width="100"  prop="status">
           
         </el-table-column>
+
+
+
+        
   </el-table>
 
   <div class="pageDiv">

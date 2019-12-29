@@ -2,7 +2,7 @@
  * @Author: liuyr 
  * @Date: 2019-12-27 16:29:05 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-27 19:46:25
+ * @Last Modified time: 2019-12-28 16:14:58
  */
 import axios from '@/utils/axios'
 /**
@@ -24,12 +24,12 @@ export function findAllCustomer(param) {
  * @param {Object} param {id:''} 
  */
     export function findByStatus(param) {
-    return axios.get('/CustomerService/findByEducation', param);
+    return axios.get('/CustomerService/findByEducation', {params:param});
 }
 /**
  * 通过性别查找客服信息
  * @param {Object} param {id:''} 
  */
 export function findByGender(param) {
-    return axios.get('/CustomerService/findByGender', param);
+    return axios.get('/CustomerService/findByGender', {params:param});
 }
