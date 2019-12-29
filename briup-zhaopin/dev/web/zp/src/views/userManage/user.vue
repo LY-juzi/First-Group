@@ -3,24 +3,29 @@
  * 用户列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: Iris
- * @Last Modified time: 2019-12-28 16:32:59
+ * @Last Modified time: 2019-12-28 22:50:57
  */
 <template>
   <div id="userList">用户列表页面
-      {{realnameData}}
-      <!-- 添加用户按钮 -->
-      <el-button @click="Add" size="mini" type="primary">添加用户</el-button>
-      <!-- 下拉栏 -->
-       <!-- <el-select v-model="value" placeholder="关键字">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select> -->
+     
+     
+     <div  class="btn">
+        <!-- 按钮 -->
+        <el-button @click="Add" size="mini" type="primary" style="background:rgb(235, 108, 50)">添加用户</el-button>
+        <el-button @click="Import" size="mini" type="primary" icon="el-icon-info">导入用户</el-button>
+      </div>
+      <!-- 按关键字搜索 -->
+     <div class="searchDiv">
+          <el-input clearable @change="inputChange" placeholder="请输入" v-model="inputvalue" size="mini">
+            <el-select style="width:100px" v-model="searchType" slot="prepend" placeholder="关键字" size="mini">
+              <el-option label="用户id" value="id"></el-option >
+              <el-option label="用户名" value="username"></el-option>
+            </el-select>
+            <el-button @click="tofind(inputvalue)" slot="append" icon="el-icon-search"></el-button>
+          </el-input>
+        </div>
       <div class="select">
-        <el-select @change="educationChange"  v-model="education" clearable placeholder="学历">
+        <el-select @change="educationChange" size="mini" v-model="education"  clearable placeholder="学历">
           <el-option
             v-for="item in educationData"
             :key="item"
@@ -28,7 +33,7 @@
             :value="item">
           </el-option>
         </el-select>
-        <el-select @change="genderChange" v-model="gender" clearable placeholder="性别">
+        <el-select @change="genderChange" size="mini" v-model="gender" clearable placeholder="性别">
           <el-option
             v-for="item in genderData"
             :key="item"
@@ -39,7 +44,7 @@
       </div>
       
      <div class="table">
-       {{realnameData}}
+ 
         <el-table
             ref="multipleTable"
             :data="jobhunterList"
@@ -146,6 +151,26 @@
           <el-button type="primary" @click="toAdd">导入</el-button>
         </div>
       </el-dialog>
+      <!-- 导入模态框 -->
+      <div class="importDiv">
+      <el-dialog
+        title="导入说明"
+        :visible.sync="importVisible"
+        width="60%"
+        :before-close="beforeClose">
+        <span style="color:red">使用导入功能时，请按照模板表格规定的字段去填写对应信息，</span><br>
+        <span style="color:red">您可以点击按钮下载模板表格，填写完后在下面提交 ：</span>
+       
+          <div class="borderDiv" border="2px solid block ">
+            <span class="span1">点击选择文件或将表格移动到框内</span>
+          </div>
+          <el-button class="button1">下载模板</el-button>
+        <span slot="footer" class="dialog-footer">
+           <el-button @click="importVisible = false">取消导入</el-button>
+          <el-button  type="primary" @click="importVisible = false">开始导入</el-button>
+        </span>
+        </el-dialog>
+      </div>
       <!-- 修改模态框 -->
       <el-dialog title="修改求职者信息" :visible.sync="editVisible" :before-close="beforeClose">
          <!-- {{currentJober}} -->
@@ -199,7 +224,14 @@
 
 <script>
 import axios from '@/utils/axios'
-import {findAllJobhunter,findJobhunterByGender,findJobhunterByEducation,deleteJobhunterById,saveOrUpdateJobhunter} from '@/api/jobhunter.js'
+import {findAllJobhunter,
+        findJobhunterByGender,
+        findJobhunterByEducation,
+        deleteJobhunterById,
+        saveOrUpdateJobhunter,
+        findJobhunterByUsername,
+        findJobhunterByfindById,
+        } from '@/api/jobhunter.js'
 import config from '@/utils/config.js'
 import qs from "qs";
 //设置基础路径
@@ -221,8 +253,10 @@ export default {
       jobhunterData:[],
       //求职者列表，数据
       //jobhunterList:[],
-    //  模态框显示与隐藏
+    //新增模态框显示与隐藏
       addVisible: false,
+      //导入模态框显示与隐藏
+      importVisible:false,
       //当前页
       currentPage: 1,
       //表单左侧的文字宽度
@@ -277,7 +311,9 @@ export default {
           { required: true, message: "求职状态", trigger: "blur" }
         ],
       },
-      //搜索栏，从搜索栏中选中用户名，姓名，手机号
+      searchType:'',
+      inputvalue:''
+      
       
     };
   },
@@ -291,19 +327,64 @@ export default {
     },
   },
   methods: {
+    //改变关键字选项
+    inputChange(inputvalue){
+      this.findAllJober();
+    },
+
+    //搜索功能
+    async tofind(inputvalue){
+      if(this.searchType === "username"){
+        if(inputvalue){
+          
+          try {
+            let res = await findJobhunterByUsername({username:inputvalue});
+            this.jobhunterData = res.data;
+            this.currentPage = 1;
+          } catch (error) {
+            config.errorMsg(this,'没有相关信息');
+          }
+        }
+        else{
+          this.findAllJober();
+        }
+      }
+      else{
+        if(inputvalue){
+          try {
+            let res = await findJobhunterByfindById({id:inputvalue});
+            this.jobhunterData = res.data;
+            this.currentPage = 1;
+          } catch (error) {
+            config.errorMsg(this,'没有相关信息');
+          }
+        }
+        else{
+          this.findAllJober();
+        }
+      }
+      
+    },
+    
+    //关闭
     beforeClose(){
        this.$refs["ruleForm"].resetFields();
       this.editVisible=false;
+      this.addVisible=false;
+       this.importVisible=false;
     },
     //关闭模态框
     toCancel(formName){
       //重置表单验证，关闭模态框
       this.$refs[formName].resetFields();
       this.editVisible=false;
+      this.addVisible=false;
+      this.importVisible=false;
     },
-     //学历发生改变
+    
+    
+    //学历发生改变
     async educationChange(val){
-  
       this.gender="",
       console.log(val);
       if (val) {
@@ -319,7 +400,8 @@ export default {
         this.findAllJober();
       }
     },
-     //性别发生改变
+
+    //性别发生改变
     async genderChange(val){
       this.education="",
       console.log(val);
@@ -335,6 +417,7 @@ export default {
         this.findAllJober();
       }
     },
+
     //保存
     async toSave(){
       //保存
@@ -352,12 +435,21 @@ export default {
          config.errorMsg(this,'修改失败');
       }
     },
+
+    //导入按钮
+    Import(){
+      this.dialogTitle = "导入说明";
+      this.importVisible=true;
+    },
+
     //新增按钮
     Add(){
        this.dialogTitle = "新增求职者";
       //  this.jobhunter = {};
        this.addVisible=true;
     },
+
+    //增加功能
     async toAdd(){
       // this.dialogTitle = "新增求职者";
       //  this.jobhunter = {};
@@ -376,11 +468,13 @@ export default {
          config.errorMsg(this,'导入失败');
       }
     },
+
     //编辑
     toEdit(row) {
      this.currentJober = { ...row };
       this.editVisible = true;
     },
+
     //删除
     toDelete(id) {
       // alert("删除");
@@ -400,6 +494,7 @@ export default {
               config.errorMsg(this, "删除失败");
             }
           } catch (error) {
+            console.log(error);
             config.errorMsg(this, "有关联信息存在，删除失败");
           }
         })
@@ -411,8 +506,9 @@ export default {
           });
         });
     },
-     //批量删除
-    toBatchDelete() {
+
+    //批量删除
+     toBatchDelete() {
       //获取要批量删除的id  this.ids
       let ids = this.ids;
       if (ids.length > 0) {
@@ -452,7 +548,6 @@ export default {
         });
       }
     },
-
      
     //复选框选中切换
     selectionChange(val) {
@@ -463,7 +558,8 @@ export default {
       });
       this.ids = ids;
     },
-   //查找所有的求职者信息
+
+    //查找所有的求职者信息
     async findAllJober(){
       try {
         let res=await findAllJobhunter();
@@ -502,5 +598,33 @@ export default {
   mounted() {}
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
+.select{
+  padding: 10px;
+};
+.pageDiv{
+  float: right;
+ 
+};
+.borderDiv{
+  .span1{
+    margin-top: 20px;
+  };
+  
+  width: 300px;
+  height: 150px;
+  border: 2px dashed rgb(136, 144, 145);
+  margin: 10px auto;
+  padding: 10px;
+};
+.btn{
+  float: right;
+  margin-top:-15px;
+};
+.searchDiv{
+        float: right;
+        width: 350px;
+        margin-top: 30px;
+      } 
+
 </style>
