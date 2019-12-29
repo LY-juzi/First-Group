@@ -3,7 +3,7 @@
  * 招聘完结页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 10:02:15
+ * @Last Modified time: 2019-12-29 15:43:20
  */
 <template>
   <div id="recruitFinish">
@@ -144,12 +144,12 @@
 
         <el-form-item label="职业标签" :label-width="formLabelWidth">
           <el-select
+          @change="a"
            style="width:100%"
             v-model="showData.welfare"
             multiple
             filterable
             allow-create
-            default-first-option
             placeholder="请选择职业标签"
           >
             <el-option v-for="item in allWelfare" :key="item" :label="item" :value="item"></el-option>
@@ -240,6 +240,9 @@ export default {
     }
   },
   methods: {
+    a(x){
+      this.$forceUpdate();
+    },
     async findAllWelfare() {
       try {
         let welfares = await findAllWelfare();
@@ -289,6 +292,8 @@ export default {
     toNew() {
       this.dialogFormVisible = true;
       this.showData = {};
+      this.showData.welfareDialog=[];
+      
     },
     async toSee(row) {
       this.showData = row;

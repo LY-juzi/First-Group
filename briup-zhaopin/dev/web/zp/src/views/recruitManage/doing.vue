@@ -3,7 +3,7 @@
  * 招聘中页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 10:50:18
+ * @Last Modified time: 2019-12-29 15:46:22
  */
 <template>
   <div id="recruitDoing">
@@ -123,10 +123,11 @@
           </el-col>
         </el-row>
 
-        <el-form-item label="职业标签" :label-width="formLabelWidth" prop="welfare">
+        <el-form-item label="职业标签" :label-width="formLabelWidth" >
           <el-select
            style="width:100%"
             v-model="showData.welfareDialog"
+            @change="a"
             multiple
             filterable
             allow-create
@@ -194,7 +195,6 @@ import { findAllWelfare } from "@/api/welfare";
 export default {
   data() {
     return {
-      welfareDialog:[],
       rules: {
         contactPhone: [
           { required: true, message: "请输入联系人电话", trigger: "blur" }
@@ -210,9 +210,6 @@ export default {
         ],
         salary: [
           { required: true, message: "请输入薪资水平", trigger: "blur" }
-        ],
-        welfare: [
-          { required: true, message: "请输入职业标签", trigger: "blur" }
         ],
         startAndEnd: [
           { required: true, message: "请输入招聘时长", trigger: "blur" }
@@ -252,6 +249,10 @@ export default {
     }
   },
   methods: {
+    
+    a(x){
+      this.$forceUpdate();
+    },
     async findAllWelfare() {
       try {
         let welfares = await findAllWelfare();
@@ -267,6 +268,7 @@ export default {
     },
     toSave() {
       this.dialogFormVisible = false;
+      this.showData.welfareDialog=[];
       this.$refs["ruleForm"].validate(async valid => {
         if (valid) {
           delete this.showData.startTime;
@@ -277,7 +279,7 @@ export default {
              this.showData.welfare = this.showData.welfareDialog.toString();
           }
 
-          this.showData.welfareDialog = [];
+          delete this.showData.welfareDialog;
           try {
             await saveOrUpdateEmployment(this.showData);
             config.successMsg(this, "操作成功");
@@ -318,7 +320,6 @@ export default {
       this.showData = row;
       console.log(row.welfare);
         this.welfareList = row.welfare.split(",");
-      
       try {
         let business = await findBusinessById({ id: this.showData.businessId });
         this.showData.businessName = business.data.name;
@@ -328,14 +329,18 @@ export default {
       this.seeVisible = true;
     },
     toNew() {
+      this.$refs["ruleForm"].resetFields();
       this.title = "发布职位";
       this.dialogFormVisible = true;
       this.showData = {};
+      this.showData.welfareDialog=[];
+
     },
     toShow(row) {
       this.title = "修改招聘";
       this.dialogFormVisible = true;
       this.showData = row;
+      this.showData.welfareDialog=[];
     },
 
     toDelete(id) {

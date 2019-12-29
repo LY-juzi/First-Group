@@ -3,11 +3,11 @@
  * 配置文件，项目中的通用方法和地址
  * @Date: 2019-12-22 19:09:29 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 13:12:22
+ * @Last Modified time: 2019-12-29 13:14:07
  */
 import Highcharts from 'highcharts';
 /* 设置后台接口基础路径 */
-let bp = "http://127.0.0.1:8899";
+let bp = "http://39.105.113.162:8899";
 Highcharts.setOptions({
     // 设置Highcharts中的时间少8小时
     global: { useUTC: false },
