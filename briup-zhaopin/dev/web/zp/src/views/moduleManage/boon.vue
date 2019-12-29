@@ -2,13 +2,13 @@
  * @Author: liuyr 
  * 福利管理页面
  * @Date: 2019-12-23 17:11:53 
- * @Last Modified by: luy
- * @Last Modified time: 2019-12-29 15:11:12
+ * @Last Modified by: lijunkun
+ * @Last Modified time: 2019-12-29 20:01:58
  */
 <template>
   <div id="moduleBoon">
     <div class="searchDiv">
-      <el-select @change="selectChange" v-model="option" placeholder="全部">
+      <el-select @change="selectChange" size="small"  v-model="option" placeholder="全部">
         <el-option v-for="item in options" :key="item" :label="item" :value="item"></el-option>
       </el-select>
     </div>

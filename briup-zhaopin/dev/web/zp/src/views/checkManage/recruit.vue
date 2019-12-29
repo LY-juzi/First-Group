@@ -3,23 +3,23 @@
  * 招聘审核页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: lijunkun
- * @Last Modified time: 2019-12-29 14:54:30
+ * @Last Modified time: 2019-12-29 20:31:09
  */
 <template>
   <div id="recruitCheck">
-    <!-- {{recruitCheck}}npm -->
+    <!-- {{recruitCheck}}npm说 -->
     <!-- 定义一个关键字下拉列表，输入框还有按钮，在关键字范围内进行查询 -->
     <div class="searchDiv">
       <!-- 搜索按钮 -->
-      <el-button icon="el-icon-search" style="width:5px" class="box" size="mini" @click="tochaxun(input)"></el-button >
+      <el-button icon="el-icon-search" style="width:5px" class="box" size="small" @click="tochaxun(input)"></el-button >
       <!-- 关键字输入框 -->
       <el-input style="width:12%"
             placeholder="请输入内容"
             v-model="input"
-            clearable class="box" size="mini">
+            clearable class="box" size="small">
           </el-input>
       <!-- 关键字下拉列表 -->
-      <el-select v-model="value" clearable style="width:9%" @change="valueChange" placeholder="关键字" class="box" size="mini"    >
+      <el-select v-model="value" clearable style="width:9%" @change="valueChange" placeholder="关键字" class="box" size="small"    >
           <el-option
             v-for="item in jobData"
             :key="item"
@@ -32,7 +32,7 @@
       
     <!-- {{recruitData}} -->
     <div class="serchDiv">
-      <el-select v-model="job" clearable placeholder="职位类型" @change="jobChange">
+      <el-select v-model="job" clearable placeholder="职位类型" size="small" @change="jobChange">
     <el-option
       v-for="item in jobData"
       :key="item.id"
@@ -47,7 +47,7 @@
     :data="recruitCheck"
     tooltip-effect="dark"
     style="width: 100%"
-    
+    :header-cell-style="{background:'#87CEEB',color:'#FFFFFF'}"
     >
     <el-table-column
       label="招聘标题"
@@ -90,16 +90,16 @@
               <div>{{scope.row.status}}</div>
             </div>
             <div v-if="scope.row.status === '待审核'">
-            <el-button  @click="toYes(scope.row)" size="mini"  type="text" >通过</el-button>
-            <el-button type="text" size="mini" @click="toNo(scope.row)" >拒绝</el-button>
+            <el-button  @click="toYes(scope.row)" size="small"  type="text" >通过</el-button>
+            <el-button type="text" size="small" @click="toNo(scope.row)" >拒绝</el-button>
             </div>
-            
           </template>
         </el-table-column>
 
 
         
   </el-table>
+
 
   <div class="pageDiv">
         <el-pagination
@@ -112,8 +112,26 @@
         ></el-pagination>
       </div>
 
+  <!-- 通过按钮 -->
+  <el-dialog title="提示" :visible.sync="adoptVisible" style="width:40%" class="anniu">
+      <td>是否确实通过？</td>
+    <div slot="footer" class="dialog-footer" >
+    <el-button @click="adoptVisible = false" type="danger" size="small">取 消</el-button>
+    <el-button type="primary" @click="toSave" size="small">确 定</el-button>
+    </div>
+  </el-dialog>
+<el-dialog title="提示" :visible.sync="refuseVisible" style="width:40%" class="anniu">
+  <td>请输入拒绝理由</td>
+    <el-input type="textarea" :rows="4"></el-input>
+    <div slot="footer" class="dialog-footer" >
+    <el-button @click="refuse('ruleForm')" size="small" type="danger">取 消</el-button>
+    <el-button type="primary" @click="toSave" size="small">确 定</el-button>
+    </div>
+  </el-dialog>          
+  
+
   <!-- 查看模态框 -->
-   <el-dialog :title="currentBus.title" :visible.sync="seeVisible" >
+   <el-dialog :title="currentBus.title" :visible.sync="seeVisible" width="40%" >
       <div class="seeDiv">
         <span>标题：</span>
         {{currentBus.title}}
@@ -151,9 +169,12 @@
         <span>详情：</span>
         {{currentBus.description}}
         </div>
-
     </el-dialog>
+    
+    
+    
     </div>
+    
   </div>
 </template>
 
@@ -165,6 +186,8 @@ import {findAllJobs} from '@/api/job.js';
 export default {
   data() {
     return {
+      refuseVisible:false,
+      adoptVisible:false,
       job:'',
       jobData:[],
       currentBus: {},
@@ -191,6 +214,14 @@ export default {
   },
   
   methods: {
+    handleClose(){
+      this.refuseVisible=false;
+      this.$refs["ruleForm"].resetFields();
+    },
+    refuse(formName){
+      this.refuseVisible=false;
+      this.$refs[formName].resetFields();
+    },
     //通过
     toYes(row) {
       this.currentBus = {...row};
@@ -352,5 +383,11 @@ export default {
 .dialog-footer{
   text-align: center;
   margin-top: -40px;
+}
+.anniu{
+  margin-top: auto,auto;
+}
+.searchDiv{
+  margin-right: 20px;
 }
 </style>

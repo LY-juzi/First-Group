@@ -2,13 +2,13 @@
  * @Author: liuyr 
  * 职位管理页面
  * @Date: 2019-12-23 17:11:53 
- * @Last Modified by: luy
- * @Last Modified time: 2019-12-29 15:31:54
+ * @Last Modified by: lijunkun
+ * @Last Modified time: 2019-12-29 20:06:32
  */
 <template>
   <div id="modulePosition">
     <el-row>
-        <el-button @click="toAdd()" type="danger" size="small" id="add" round>添加职位</el-button>
+        <el-button @click="toAdd()" type="danger" size="small" id="add" icon="el-icon-info">添加职位</el-button>
     </el-row>
 
     <div class="wrapDiv" v-for="item in statusData" :key="item.id">
@@ -175,15 +175,16 @@ export default {
 #modulePosition{
   #add{
     position: relative;
-    left: 600px;
-    margin: 10px
+    left: 630px;
+    margin: 10px;
   }
 }
 .wrapDiv {
   border: 1px solid #ccc;
   margin: 10px;
   padding: 10px;
-  width: 60%;
+  width: 55%;
+  margin-left: 35px;
 }
 .jobDiv {
   border-top: 1px solid #ccc;

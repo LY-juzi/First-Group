@@ -2,12 +2,12 @@
  * @Author: liuyr 
  * 招聘中页面
  * @Date: 2019-12-23 17:03:30 
- * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 16:12:24
+ * @Last Modified by: lijunkun
+ * @Last Modified time: 2019-12-29 19:39:01
  */
 <template>
   <div id="recruitDoing">
-    <el-select v-model="job" placeholder="职位类型" class="select" @change="changeJob">
+    <el-select v-model="job" placeholder="职位类型" class="select" size="small" @change="changeJob">
       <el-option label="职位类型" value=""></el-option>
       <el-option v-for="(item,index) in jobsData" :key="index" :label="item" :value="item"></el-option>
     </el-select>
@@ -16,12 +16,14 @@
       <el-button size="small" type="primary" class="el-icon-info btn2">导入职位</el-button>
     </el-row>
     <template>
+      
       <el-table
         :data="doingDataList"
         style="width: 100%"
         class="table"
         ref="multipleTable"
         tooltip-effect="dark"
+        :header-cell-style="{background:'#87CEEB',color:'#FFFFFF'}"
         @selection-change="handleSelectionChange"
       >
         <el-table-column align="center" type="selection" width="55"></el-table-column>
@@ -45,7 +47,7 @@
     </template>
     <div class="footDiv">
       <div class="btnDiv">
-        <el-button size="mini" class="delete-btn" @click="toBatchDelete">删除</el-button>
+        <el-button size="mini" type="danger" plain class="delete-btn" @click="toBatchDelete">批量删除</el-button>
       </div>
       <div class="pagiDiv">
         <el-pagination
@@ -153,7 +155,7 @@
 
     <!-- 查看模态框 -->
     <div>
-      <el-dialog title="查看详情" :visible.sync="seeVisible" class="seeDialog">
+      <el-dialog title="查看详情" :visible.sync="seeVisible" width="40%" class="seeDialog">
         <div class="seeDiv">
           <span class="title">{{showData.title}}</span>
           <span class="salary">{{showData.salary}}元/月</span>
@@ -483,7 +485,6 @@ export default {
 }
 .btns {
   float: right;
-  margin-top: -50px;
 }
 .btn1 {
   background-color: rgb(255, 102, 0);
@@ -494,9 +495,6 @@ export default {
   border-color: rgb(51, 102, 255);
 }
 .delete-btn {
-  background-color: red;
-  color: white;
-  margin-top: 10px;
   margin-left: 10px;
 }
 

@@ -2,8 +2,8 @@
  * @Author: frxi 
  * 商家api
  * @Date: 2019-12-25 09:02:55 
- * @Last Modified by: frxi
- * @Last Modified time: 2019-12-25 10:43:43
+ * @Last Modified by: lijunkun
+ * @Last Modified time: 2019-12-29 17:28:35
  */
 
 import axios from '@/utils/axios';
@@ -72,5 +72,5 @@ export function findBusinessByScale(param){
  * @param {Object} param {Scale:''}
  */
 export function saveOrUpdateBusiness(param){
-    return axios.get('/Business/saveOrUpdate',{params:param});
+    return axios.post('/Business/saveOrUpdate',param);
 }

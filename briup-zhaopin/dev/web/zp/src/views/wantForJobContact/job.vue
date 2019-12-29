@@ -2,15 +2,15 @@
  * @Author: yanzh 
  * 求职列表页面
  * @Date: 2019-12-23 17:11:53 
- * @Last Modified by: yanzh
- * @Last Modified time: 2019-12-28 15:05:06
+ * @Last Modified by: lijunkun
+ * @Last Modified time: 2019-12-29 20:18:55
  */
 <template>
   <div id="jobList">
     <!-- {{findAllWithJobhAndEmplData}} -->
-    <el-button type="info" plain size="mini" @click="seeAll()" name="one">全部</el-button>
-    <el-button type="info" plain size="mini" @click="seeContact()" name="one">待联系</el-button>
-    <el-table :data="findAllWithJobhAndEmplDataList" class="tb">
+    <el-button type="success" plain size="small" @click="seeAll()" name="one">全部</el-button>
+    <el-button type="success" plain size="small" @click="seeContact()" name="one">待联系</el-button>
+    <el-table :data="findAllWithJobhAndEmplDataList" class="tb" :header-cell-style="{background:'#87CEEB',color:'#FFFFFF'}">
       <el-table-column
         align="center"
         prop="jobhunter.realname"
@@ -53,7 +53,7 @@
     </div>
 
     <!-- 查看简历 -->
-    <el-dialog title = ""  :visible.sync="dialogTableVisible" width="40%">
+    <el-dialog title = ""  :visible.sync="dialogTableVisible" width="35%">
     <el-tag color="skyblue" size="mini">个人信息</el-tag>
                 <div>
                     <table class="tb">
@@ -163,7 +163,7 @@ export default {
 .tb{
   width:"100%";
   margin-top: 15px;
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 .td_content{
   margin-left: 40px;

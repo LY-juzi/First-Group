@@ -2,13 +2,13 @@
  * @Author: liuyr 
  * 城市管理页面
  * @Date: 2019-12-23 17:11:53 
- * @Last Modified by: luy
- * @Last Modified time: 2019-12-29 15:31:54
+ * @Last Modified by: lijunkun
+ * @Last Modified time: 2019-12-29 20:05:16
  */
 <template>
   <div id="moduleCity">
     <el-row>
-      <el-button @click="toAdd()" type="success" size="small" id="add" round>添加省份</el-button>
+      <el-button @click="toAdd()" type="success" size="small" id="add" icon="el-icon-info">添加省份</el-button>
     </el-row>
 
     <div class="wrapDiv" v-for="item in provinceData" :key="item.id">
@@ -186,7 +186,7 @@ export default {
 #moduleCity {
   #add {
     position: relative;
-    left: 600px;
+    left: 630px;
     margin: 10px;
   }
 }
@@ -194,7 +194,8 @@ export default {
   border: 1px solid #ccc;
   margin: 10px;
   padding: 10px;
-  width: 60%;
+  width: 55%;
+  margin-left: 35px;
 }
 .cityDiv {
   border-top: 1px solid #ccc;

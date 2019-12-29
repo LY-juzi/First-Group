@@ -1,8 +1,8 @@
 /*求职者API
  * @Author: Iris 
  * @Date: 2019-12-25 14:50:02 
- * @Last Modified by: Iris
- * @Last Modified time: 2019-12-28 14:35:05
+ * @Last Modified by: lijunkun
+ * @Last Modified time: 2019-12-29 22:08:23
  */
 
 import axios from '@/utils/axios'
@@ -22,6 +22,7 @@ export function findAllJobhunter(){
     
     return axios.get("/Jobhunter/findAll")
 }
+
 
 /**
  * 通过学历查找求职者

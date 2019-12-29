@@ -2,8 +2,8 @@
  * @Author: liuyr 
  * 用户列表页面
  * @Date: 2019-12-23 17:11:53 
- * @Last Modified by: Iris
- * @Last Modified time: 2019-12-29 17:25:34
+ * @Last Modified by: lijunkun
+ * @Last Modified time: 2019-12-29 22:09:36
  */
 <template>
   <div id="userList">
@@ -11,12 +11,12 @@
      
      <div  class="btn">
         <!-- 按钮 -->
-        <el-button @click="Add" size="mini" type="primary" style="background:rgb(235, 108, 50)" icon="el-icon-info">添加用户</el-button>
-        <el-button @click="Import" size="mini" type="primary" icon="el-icon-info">导入用户</el-button>
+        <el-button @click="Add" size="small" type="primary" style="background:rgb(235, 108, 50)" icon="el-icon-info">添加用户</el-button>
+        <el-button @click="Import" size="small" type="primary" icon="el-icon-info">导入用户</el-button>
       </div>
   <!-- 按关键字搜索 -->
      <div class="searchDiv">
-          <el-input clearable @change="inputChange" placeholder="请输入" v-model="inputvalue" size="mini">
+          <el-input clearable @change="inputChange" placeholder="请输入" v-model="inputvalue" size="small">
             <el-select style="width:100px" v-model="searchType" slot="prepend" placeholder="关键字" size="mini">
               <el-option label="用户id" value="id"></el-option >
               <el-option label="用户名" value="username"></el-option>
@@ -26,7 +26,7 @@
       </div>
   <!-- 筛选栏 -->
       <div class="select">
-        <el-select @change="educationChange" size="mini" v-model="education"  clearable placeholder="学历">
+        <el-select @change="educationChange" size="small" v-model="education"  clearable placeholder="学历">
           <el-option
             v-for="item in educationData"
             :key="item"
@@ -34,7 +34,7 @@
             :value="item">
           </el-option>
         </el-select>
-        <el-select @change="genderChange" size="mini" v-model="gender" clearable placeholder="性别">
+        <el-select @change="genderChange" size="small" v-model="gender" clearable placeholder="性别">
           <el-option
             v-for="item in genderData"
             :key="item"
@@ -50,6 +50,7 @@
             :data="jobhunterList"
             tooltip-effect="dark"
             style="width: 100%"
+            :header-cell-style="{background:'#87CEEB',color:'#FFFFFF'}"
             @selection-change="selectionChange">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="username" label="用户名"  align="center"> </el-table-column>
@@ -66,12 +67,8 @@
             </el-table-column>
         </el-table>
      </div>
-  <!-- 批量删除 -->
-     <div class="footerDiv">
-      <div class="btnDiv">
-        <el-button @click="toBatchDelete" size="mini" type="danger" plain>批量删除</el-button>
-      </div>
-      <div class="pageDiv">
+
+     <div class="pageDiv">
         <el-pagination
           :page-size="pageSize"
           :current-page.sync="currentPage"
@@ -81,6 +78,12 @@
           :total="jobhunterData.length"
         ></el-pagination>
       </div>
+  <!-- 批量删除 -->
+     <div class="footerDiv">
+      <div class="btnDiv">
+        <el-button @click="toBatchDelete" size="mini" type="danger" plain>批量删除</el-button>
+      </div>
+      
     </div>
   <!-- 添加用户模态框 -->
       <el-dialog title="添加求职者信息" :visible.sync="addVisible" :before-close="beforeClose"> 
@@ -173,7 +176,7 @@
         </el-dialog>
       </div>
   <!-- 修改模态框 -->
-      <el-dialog title="修改求职者信息" :visible.sync="editVisible" :before-close="beforeClose">
+      <el-dialog title="修改求职者信息" width="45%" :visible.sync="editVisible" :before-close="beforeClose">
          <!-- {{currentJober}} -->
         <el-form :model="currentJober"  :rules="rules" ref="ruleForm">
           <el-row :gutter="20">
@@ -261,7 +264,7 @@ export default {
       //当前页
       currentPage: 1,
       //表单左侧的文字宽度
-      formLabelWidth:"100px",
+      formLabelWidth:"80px",
       //表单中的数据对象
       jobhunter:{
         id:"",
@@ -616,7 +619,7 @@ export default {
 };
 .pageDiv{
   float: right;
- 
+  margin-top: 10px;
 };
 .borderDiv{
   .span1{
@@ -631,13 +634,20 @@ export default {
 };
 .btn{
   float: right;
-   margin-top:15px;
+   margin-top:12px;
    padding-left: 15px;
+};
+.btnDiv{
+  margin-top: 10px;
+};
+.dialog-footer{
+  text-align: center;
+  margin-top: -20px;
 };
 .searchDiv{
         float: right;
         width: 350px;
-        margin-top: 15px;
+        margin-top: 13px;
       } 
 
 </style>

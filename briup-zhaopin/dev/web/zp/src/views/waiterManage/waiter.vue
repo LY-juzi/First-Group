@@ -2,8 +2,8 @@
  * @Author: liuyr 
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
- * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 18:36:00
+ * @Last Modified by: lijunkun
+ * @Last Modified time: 2019-12-29 20:14:23
  */
 <template>
   <div id="businessList">
@@ -11,7 +11,7 @@
     {{statusData}} -->
     <!-- 搜索框 -->
     <div class="searchDiv">
-      <el-select @change="statusChange" size="mini" v-model="status" clearable placeholder="状态">
+      <el-select @change="statusChange" size="small" v-model="status" clearable placeholder="状态">
         <el-option
           v-for="item in statusData"
           :key="item"
@@ -19,7 +19,7 @@
           :value="item">
           </el-option>
       </el-select>
-      <el-select @change="genderChange" size="mini" v-model="gender" clearable placeholder="性别">
+      <el-select @change="genderChange" size="small" v-model="gender" clearable placeholder="性别">
         <el-option v-for="item in genderData"
          :key="item"
          :label="item"
@@ -29,13 +29,13 @@
     </div>
     <div class="btn">
         <!-- 按钮 -->
-        <el-button @click="addWaiter" class="butt" size="mini" type="primary" icon="el-icon-info" style="background:rgb(235, 108, 50)">添加客服</el-button>
-        <el-button @click="Import" class="butt" size="mini" type="primary" icon="el-icon-info">导入客服</el-button>
+        <el-button @click="addWaiter" class="butt" size="small" type="primary" icon="el-icon-info" style="background:rgb(235, 108, 50)">添加客服</el-button>
+        <el-button @click="Import" class="butt" size="small" type="primary" icon="el-icon-info">导入客服</el-button>
       </div>
       <!-- 按关键字搜索 -->
      <div class="search">
-          <el-input clearable @change="inputChange" placeholder="请输入" v-model="inputvalue" size="mini">
-            <el-select style="width:100px" v-model="searchType" slot="prepend" placeholder="关键字" size="mini">
+          <el-input clearable @change="inputChange" placeholder="请输入" v-model="inputvalue" size="small">
+            <el-select style="width:100px" v-model="searchType" slot="prepend" placeholder="关键字" size="small">
               <el-option label="用户ID" value="id"></el-option >
               <el-option label="用户名" value="username"></el-option>
             </el-select>
@@ -49,6 +49,7 @@
         :data="customerList"
         tooltip-effect="dark"
         style="width: 100%"
+        :header-cell-style="{background:'#87CEEB',color:'#FFFFFF'}"
         @selection-change ="selectionChange" >
         <el-table-column align="center" type="selection" width="55"></el-table-column>
         <el-table-column align="center" prop="username" label="用户名"></el-table-column>
@@ -460,6 +461,7 @@ export default {
 .btn{
   float: right;
   margin-top:8px;
+  margin-right: 10px;
 }
 .search{
   float:right;
