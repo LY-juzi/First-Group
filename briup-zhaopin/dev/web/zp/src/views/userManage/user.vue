@@ -2,11 +2,11 @@
  * @Author: liuyr 
  * 用户列表页面
  * @Date: 2019-12-23 17:11:53 
- * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 10:56:46
+ * @Last Modified by: Iris
+ * @Last Modified time: 2019-12-29 16:22:41
  */
 <template>
-  <div id="userList">
+  <div id="userList">用户列表页面
      
      
      <div  class="btn">
@@ -14,7 +14,7 @@
         <el-button @click="Add" size="mini" type="primary" style="background:rgb(235, 108, 50)">添加用户</el-button>
         <el-button @click="Import" size="mini" type="primary" icon="el-icon-info">导入用户</el-button>
       </div>
-      <!-- 按关键字搜索 -->
+  <!-- 按关键字搜索 -->
      <div class="searchDiv">
           <el-input clearable @change="inputChange" placeholder="请输入" v-model="inputvalue" size="mini">
             <el-select style="width:100px" v-model="searchType" slot="prepend" placeholder="关键字" size="mini">
@@ -23,7 +23,8 @@
             </el-select>
             <el-button @click="tofind(inputvalue)" slot="append" icon="el-icon-search"></el-button>
           </el-input>
-        </div>
+      </div>
+  <!-- 筛选栏 -->
       <div class="select">
         <el-select @change="educationChange" size="mini" v-model="education"  clearable placeholder="学历">
           <el-option
@@ -42,9 +43,8 @@
           </el-option>
         </el-select>
       </div>
-      
+  <!-- 表格 -->
      <div class="table">
- 
         <el-table
             ref="multipleTable"
             :data="jobhunterList"
@@ -66,6 +66,7 @@
             </el-table-column>
         </el-table>
      </div>
+  <!-- 批量删除 -->
      <div class="footerDiv">
       <div class="btnDiv">
         <el-button @click="toBatchDelete" size="mini" type="danger" plain>批量删除</el-button>
@@ -81,7 +82,7 @@
         ></el-pagination>
       </div>
     </div>
-      <!-- 添加用户模态框 -->
+  <!-- 添加用户模态框 -->
       <el-dialog title="添加求职者信息" :visible.sync="addVisible" :before-close="beforeClose"> 
          <el-form :model="addJober"  :rules="rules" ref="ruleForm">
            <!-- {{addJober}}--- -->
@@ -151,13 +152,13 @@
           <el-button type="primary" @click="toAdd">导入</el-button>
         </div>
       </el-dialog>
-      <!-- 导入模态框 -->
+  <!-- 导入模态框 -->
       <div class="importDiv">
       <el-dialog
         title="导入说明"
         :visible.sync="importVisible"
         width="60%"
-        :before-close="beforeClose">
+        :before-close="handleClose">
         <span style="color:red">使用导入功能时，请按照模板表格规定的字段去填写对应信息，</span><br>
         <span style="color:red">您可以点击按钮下载模板表格，填写完后在下面提交 ：</span>
        
@@ -171,7 +172,7 @@
         </span>
         </el-dialog>
       </div>
-      <!-- 修改模态框 -->
+  <!-- 修改模态框 -->
       <el-dialog title="修改求职者信息" :visible.sync="editVisible" :before-close="beforeClose">
          <!-- {{currentJober}} -->
         <el-form :model="currentJober"  :rules="rules" ref="ruleForm">
@@ -365,6 +366,13 @@ export default {
       }
       
     },
+     handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      },
     
     //关闭
     beforeClose(){
@@ -382,7 +390,7 @@ export default {
       this.importVisible=false;
     },
     
-    
+
     //学历发生改变
     async educationChange(val){
       this.gender="",
