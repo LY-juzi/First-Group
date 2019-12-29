@@ -2,48 +2,28 @@
  * @Author: liuyr 
  * 城市管理页面
  * @Date: 2019-12-23 17:11:53 
- * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 13:09:59
+ * @Last Modified by: luy
+ * @Last Modified time: 2019-12-29 15:31:54
  */
 <template>
   <div id="moduleCity">
-    {{provinceData}}
     <el-row>
       <el-button @click="toAdd()" type="success" size="small" id="add" round>添加省份</el-button>
     </el-row>
-    <div class="wrapDiv" v-for="(item,index) in provinceData" :key="item.id">
+
+    <div class="wrapDiv" v-for="item in provinceData" :key="item.id">
       {{item.name}}
       <div class="cityDiv">
-        <span
-          v-for="cityitem in item.city"
-          :key="cityitem.id"
-        >{{cityitem.name}}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span v-for="cityitem in item.city" :key="cityitem.id">{{cityitem.name}}&nbsp;&nbsp;&nbsp;&nbsp;</span>
 
-        <div class="cityDataList inputDiv" >
-          <input v-model="cityName" type="text" v-if="item.visible" placeholder="请输入城市名称">
-          <button @click="addCity(item.id,index)">添加</button>
-        </div>
-        <!-- <div class="cityDataList addButDiv">
+        <div class="cityDataList addButDiv" v-if="item.butStatu">
           <el-button type="text" @click="addCity(item)">添加</el-button>
         </div>
         <div class="cityDataList inputDiv" v-else>
-          <input v-model="cityName" type="text" >
+          <input v-model="cityName" placeholder="请输入城市名字" type="text" >
           <button @click="cityDataAdd(item)">添加</button>
         </div>
-        <div class="cityDataList addButDiv" v-if="item.butStatu">
-          <el-button type="text" @click="addCity(item)">添加</el-button>
-        </div> -->
-
-        <!-- <div class="cityDataList addButDiv" v-if="item.butStatu">
-          <el-button type="text" @click="addCity(item)">添加</el-button>
-        </div>
-        <div class="cityDataList inputDiv" v-else>
-          <input v-model="cityName" type="text" >
-          <button @click="cityDataAdd(item)">添加</button>
-        </div>
-        <div class="cityDataList addButDiv" v-if="item.butStatu">
-          <el-button type="text" @click="addCity(item)">添加</el-button>
-        </div> -->
+        
       </div>
     </div>
 
@@ -66,23 +46,13 @@
 </template>
 
 <script>
-import {
-  findAllProvince,
-  findProvinceById,
-  saveOrUpdateProvince
-} from "@/api/province.js";
-import {
-  findAllCity,
-  findCityByProvinceId,
-  findCityById,
-  saveOrUpdateCity
-} from "@/api/city.js";
+import {  findAllProvince,  findProvinceById,  saveOrUpdateProvince} from "@/api/province.js";
+import { findAllCity,  findCityByProvinceId,  findCityById,  saveOrUpdateCity} from "@/api/city.js";
 import config from "@/utils/config.js";
 
 export default {
   data() {
     return {
-      // 输入框的显示
       provinceData: [],
       cityData: [],
       cityName: "",
@@ -94,63 +64,32 @@ export default {
 
       ruleForm: {
         provinceName: "",
-        cityName: ""
       },
       rules: {
         provinceName: [
           { required: true, message: "请输入省份名字", trigger: "blur" }
-        ],
-        cityName: [
-          { required: true, message: "请输入城市名字", trigger: "blur" }
         ]
       }
     };
   },
   computed: {},
   methods: {
-    async addCity(id,index){
-      if((typeof this.provinceData[index].visible)==='undefined'||this.provinceData[index].visible===false){
-        this.provinceData[index].visible = true;
-      }else{
-        this.provinceData[index].visible = false;
-      }
-      this.$forceUpdate();
-      if(this.cityName){
-        console.log(id)
-        try {
-        let res = await saveOrUpdateCity({
-          provinceId: id,
-          name: this.cityName
-        });
-        this.findAllPro();
-        this.findCity();
-        config.successMsg(this,"添加城市成功")
-        this.cityName = "";
-      } catch (error) {
-        console.log(error);
-      }
-      }
-    },
+
     //添加城市按钮
-    // async addCity(val) {
-    //   val.butStatu = false;
-    // },
+    async addCity(val){
+      val.butStatu = false;
+    },
     //添加城市
-    async cityDataAdd(val) {
+    async cityDataAdd(val){
       //需要省份pId和城市名称this.cityName
       let provinceId = val.id;
-      // console.log(provinceId);
       let name = this.cityName;
-      // console.log(name,'===');
       try {
-        let res = await saveOrUpdateCity({
-          provinceId: provinceId,
-          name: name
-        });
+        let res = await saveOrUpdateCity({provinceId:provinceId,name:name});
         this.findAllPro();
         val.butStatu = true;
-        console.log("修改成功");
-        this.cityName = "请输入城市名称";
+        config.successMsg(this,"添加成功");
+        this.cityName = '请输入城市名称';
       } catch (error) {
         console.log(error);
       }
@@ -217,20 +156,13 @@ export default {
     // 查找所有省份
     async findAllPro() {
       let res = await findAllProvince();
-      this.provinceData = [...res.data];
-    },
-
-    // 查找所有城市
-    async findCity() {
-      let val = await findAllCity();
-      this.cityData = val.data;
-      let temp = [...this.provinceData];
+      let temp = [...res.data];
       temp.forEach(async item => {
         //item是对象
         let provinceId = item.id;
         try {
           let res = await findCityByProvinceId({ provinceId: provinceId });
-          item.butStatu = "true";
+          item.butStatu = true;
           //tStatu为true则显示添加按钮，false显示输入框
           item.city = res.data;
         } catch (error) {
@@ -241,11 +173,11 @@ export default {
       setTimeout(() => {
         this.provinceData = temp;
       }, 1000);
-    }
+    },
+
   },
   created() {
     this.findAllPro();
-    this.findCity();
   },
   mounted() {}
 };
@@ -269,7 +201,7 @@ export default {
   margin: 10px;
   padding: 10px;
 }
-.cityDataList {
+.cityDataList{
   display: inline;
   margin-right: 10px;
 }
