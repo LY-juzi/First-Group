@@ -3,15 +3,15 @@
  * 用户列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: Iris
- * @Last Modified time: 2019-12-29 16:22:41
+ * @Last Modified time: 2019-12-29 17:25:34
  */
 <template>
-  <div id="userList">用户列表页面
+  <div id="userList">
      
      
      <div  class="btn">
         <!-- 按钮 -->
-        <el-button @click="Add" size="mini" type="primary" style="background:rgb(235, 108, 50)">添加用户</el-button>
+        <el-button @click="Add" size="mini" type="primary" style="background:rgb(235, 108, 50)" icon="el-icon-info">添加用户</el-button>
         <el-button @click="Import" size="mini" type="primary" icon="el-icon-info">导入用户</el-button>
       </div>
   <!-- 按关键字搜索 -->
@@ -335,9 +335,11 @@ export default {
 
     //搜索功能
     async tofind(inputvalue){
+      
       if(this.searchType === "username"){
         if(inputvalue){
-          
+          this.gender="";
+          this.education="";
           try {
             let res = await findJobhunterByUsername({username:inputvalue});
             this.jobhunterData = res.data;
@@ -353,6 +355,8 @@ export default {
       else{
         if(inputvalue){
           try {
+            this.gender="";
+            this.education="";
             let res = await findJobhunterByfindById({id:inputvalue});
             this.jobhunterData = res.data;
             this.currentPage = 1;
@@ -627,12 +631,13 @@ export default {
 };
 .btn{
   float: right;
-  margin-top:-15px;
+   margin-top:15px;
+   padding-left: 15px;
 };
 .searchDiv{
         float: right;
         width: 350px;
-        margin-top: 30px;
+        margin-top: 15px;
       } 
 
 </style>
