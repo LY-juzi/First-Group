@@ -3,7 +3,7 @@
  * 招聘审核页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: lijunkun
- * @Last Modified time: 2019-12-29 12:25:59
+ * @Last Modified time: 2019-12-29 14:54:30
  */
 <template>
   <div id="recruitCheck">
@@ -21,7 +21,7 @@
       <!-- 关键字下拉列表 -->
       <el-select v-model="value" clearable style="width:9%" @change="valueChange" placeholder="关键字" class="box" size="mini"    >
           <el-option
-            v-for="item in boxData"
+            v-for="item in jobData"
             :key="item"
             :label="item"
             :value="item">
@@ -47,7 +47,7 @@
     :data="recruitCheck"
     tooltip-effect="dark"
     style="width: 100%"
-    :header-cell-style="{background:'#98FB98',color:'#FFFFFF'}"
+    
     >
     <el-table-column
       label="招聘标题"
@@ -81,8 +81,20 @@
           </template>
         </el-table-column>
     
-    <el-table-column align="center" label="状态" width="100"  prop="status">
-          
+    <el-table-column align="center"  prop="status" label="状态" >
+          <template slot-scope="scope">
+            <div v-if="scope.row.status === '审核通过'">
+              <div>{{scope.row.status}}</div>
+            </div>
+            <div v-if="scope.row.status === '已拒绝'">
+              <div>{{scope.row.status}}</div>
+            </div>
+            <div v-if="scope.row.status === '待审核'">
+            <el-button  @click="toYes(scope.row)" size="mini"  type="text" >通过</el-button>
+            <el-button type="text" size="mini" @click="toNo(scope.row)" >拒绝</el-button>
+            </div>
+            
+          </template>
         </el-table-column>
 
 
@@ -179,6 +191,19 @@ export default {
   },
   
   methods: {
+    //通过
+    toYes(row) {
+      this.currentBus = {...row};
+      this.adoptVisible =true;
+    },
+    //拒绝
+    toNo(row) {
+      this.currentBus = {...row};
+      this.refuseVisible =true;
+    },
+    tochaxun(){
+
+    },
      // 页数发生改变
     pageChange(page) {
       this.currentPage = page;
