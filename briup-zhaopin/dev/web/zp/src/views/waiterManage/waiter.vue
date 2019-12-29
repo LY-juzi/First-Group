@@ -3,7 +3,7 @@
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 08:38:57
+ * @Last Modified time: 2019-12-29 12:38:06
  */
 <template>
   <div id="waiterList">
@@ -26,23 +26,22 @@
          :value="item">
          </el-option>
       </el-select>
-      <el-select
-       v-model="value"
-       multiple
-       filterable
-       remote
-       reserve-keyword
-       placeholder="请输入关键词"
-       :remote-method="remoteMethod"
-       :loading="loading" size="mini">
-      <el-option
-       v-for="item in customerData"
-       :key="item.value"
-       :label="item.label"
-       :value="item.value">
-      </el-option>
-  </el-select>
     </div>
+    <div class="btn">
+        <!-- 按钮 -->
+        <el-button @click="Add" class="butt" size="mini" type="primary" icon="el-icon-info" style="background:rgb(235, 108, 50)">添加客服</el-button>
+        <el-button @click="Import" class="butt" size="mini" type="primary" icon="el-icon-info">导入客服</el-button>
+      </div>
+      <!-- 按关键字搜索 -->
+     <div class="search">
+          <el-input clearable @change="inputChange" placeholder="请输入" v-model="inputvalue" size="mini">
+            <el-select style="width:80px" v-model="searchType" slot="prepend" placeholder="关键字" size="mini">
+              <el-option label="用户名" value="username"></el-option >
+              <el-option label="姓名" value="realname"></el-option>
+            </el-select>
+            <el-button @click="tofind(inputvalue)" slot="append" icon="el-icon-search"></el-button>
+          </el-input>
+        </div>
     <!-- 列表框-->
     <div class="tableDiv">
       <el-table
@@ -123,8 +122,8 @@ export default {
   },
   computed: {
     //分页数据
-    businessList() {
-      let temp = [...this.businessData];
+    waiterList() {
+      let temp = [...this.customerData];
       let page = this.currentPage;
       let pageSize = config.pageSize;
       return temp.slice((page - 1) * pageSize, page * pageSize);
@@ -181,34 +180,6 @@ export default {
       }
     },
 
-    fenlei2 () {
-        const search =this.input;
-        if (search) {
-           // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
-           // 注意： filter() 不会对空数组进行检测。
-           // 注意： filter() 不会改变原始数组。
-           return this.customerData.filter(data => {
-           // some() 方法用于检测数组中的元素是否满足指定条件;
-             // some() 方法会依次执行数组的每个元素：
-            // 如果有一个元素满足条件，则表达式返回true , 剩余的元素不会再执行检测;
-             // 如果没有满足条件的元素，则返回false。
-             // 注意： some() 不会对空数组进行检测。
-             // 注意： some() 不会改变原始数组。
-             return Object.keys(data).some(key => {
-               // indexOf() 返回某个指定的字符在某个字符串中首次出现的位置，如果没有找到就返回-1；
-               // 该方法对大小写敏感！所以之前需要toLowerCase()方法将所有查询到内容变为小写。
-               return String(data[key]).toLowerCase().indexOf(search) > -1
-             })
-           })
-        }
-         return this.customerData;
-       },
-    
-    //查看
-    toSee(row) {
-      this.currentBus = { ...row };
-      this.seeVisible = true;
-    },
     //删除
     toDelete(id) {
       // alert("删除");
@@ -268,7 +239,7 @@ export default {
                 } else {
                   config.errorMsg(this, "批量删除失败");
                 }
-                this.findAllBus();
+                this.findAllCus();
               }, 2000);
             }
           }
@@ -322,6 +293,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .tableDiv {
+  clear: both;
   margin-top: 10px;
 }
 .footerDiv {
@@ -356,5 +328,22 @@ export default {
 .dialog-footer {
   text-align: center;
   margin-top: -30px;
+}
+.searchDiv{
+  float:left;
+  margin-top: 8px;
+  margin-bottom: 14px;
+}
+.btn{
+  float: right;
+  margin-top:8px;
+}
+.search{
+  float:right;
+  margin-top: 8px;
+  margin-right: 15px;
+}
+.butt{
+  margin-right: -7px;
 }
 </style>
