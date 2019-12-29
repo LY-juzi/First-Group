@@ -3,19 +3,41 @@
  * 招聘审核页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: lijunkun
- * @Last Modified time: 2019-12-29 08:57:26
+ * @Last Modified time: 2019-12-29 12:25:59
  */
 <template>
   <div id="recruitCheck">
+    <!-- {{recruitCheck}}npm -->
+    <!-- 定义一个关键字下拉列表，输入框还有按钮，在关键字范围内进行查询 -->
+    <div class="searchDiv">
+      <!-- 搜索按钮 -->
+      <el-button icon="el-icon-search" style="width:5px" class="box" size="mini" @click="tochaxun(input)"></el-button >
+      <!-- 关键字输入框 -->
+      <el-input style="width:12%"
+            placeholder="请输入内容"
+            v-model="input"
+            clearable class="box" size="mini">
+          </el-input>
+      <!-- 关键字下拉列表 -->
+      <el-select v-model="value" clearable style="width:9%" @change="valueChange" placeholder="关键字" class="box" size="mini"    >
+          <el-option
+            v-for="item in boxData"
+            :key="item"
+            :label="item"
+            :value="item">
+          </el-option>
+          </el-select>
+    </div>
+    <!-- {{jobData}}============ -->
       
     <!-- {{recruitData}} -->
     <div class="serchDiv">
       <el-select v-model="job" clearable placeholder="职位类型" @change="jobChange">
     <el-option
-      v-for="item in recruitData"
+      v-for="item in jobData"
       :key="item.id"
-      :label="item.job"
-      :value="item.job">
+      :label="item.name"
+      :value="item.name">
     </el-option>
   </el-select>
     </div>
@@ -25,11 +47,8 @@
     :data="recruitCheck"
     tooltip-effect="dark"
     style="width: 100%"
-    @selection-change="handleSelectionChange">
-    <el-table-column
-      type="selection"
-      >
-    </el-table-column>
+    :header-cell-style="{background:'#98FB98',color:'#FFFFFF'}"
+    >
     <el-table-column
       label="招聘标题"
       
@@ -58,14 +77,13 @@
     </el-table-column>
     <el-table-column align="center" label="详细信息">
           <template slot-scope="scope">
-            <el-button @click="toSee(scope.row)" type="text" size="small">查看</el-button>
+            <el-button @click="toSee(scope.row)" size="small" type="text" round >查看</el-button>
           </template>
         </el-table-column>
     
     <el-table-column align="center" label="状态" width="100"  prop="status">
           
         </el-table-column>
-
 
 
         
@@ -130,10 +148,13 @@
 <script>
 import config from "@/utils/config.js";
 import {findAllEmployment,findEmploymentByJob,} from '@/api/recruit.js';
+import {findAllJobs} from '@/api/job.js';
 
 export default {
   data() {
     return {
+      job:'',
+      jobData:[],
       currentBus: {},
       recruitL:"",
       recruitData:[],
@@ -150,6 +171,9 @@ export default {
       let temp = [...this.recruitData];
       let page = this.currentPage;
       let pageSize = config.pageSize;
+      console.log(temp);
+      console.log(page);
+      console.log(pageSize);
       return temp.slice((page - 1) * pageSize, page * pageSize);
     }
   },
@@ -186,7 +210,6 @@ export default {
         let res = await findAllEmployment();
         this.recruitData = res.data;
         this.currentPage = 1;
-
       } catch (error) {
         config.errorMsg(this, "查找错误");
       }
@@ -195,11 +218,34 @@ export default {
       this.currentBus = { ...row };
       this.seeVisible = true;
     },
+    
+    async findAllJob(){
+      try {
+        let res = await findAllJobs();
+        let temp = res.data;
+        this.currentPage = 1;
+        //去重
+        this.jobData =temp;
+      } catch (error) {
+        config.errorMsg(this, "查找错误");
+      }
+    },
+    async findEmploymentByJ(){
+      try {
+        let res = await findEmploymentByJob();
+
+        this.recruitData = res.data;
+        this.currentPage = 1;
+      } catch (error) {
+        config.errorMsg(this, "查找错误");
+      }
+    }
 
   },
   created() {
     this.findAllEmp();
-    this.findEmploymentByJob();
+    this.findEmploymentByJ();
+    this.findAllJob();
   },
   mounted() {}
 };
@@ -243,5 +289,43 @@ export default {
 .dialog-footer {
   text-align: center;
   margin-top: -30px;
+}.tableDiv {
+  margin-top: 10px;
+}
+.box{
+  float: right
+}
+.footerDiv{
+  overflow: hidden;
+  margin-top: 10px;
+}
+.btnDiv{
+  float: left;
+}
+.pageDiv{
+  float: right;
+}
+.Reset{
+  float: right;
+}
+.seeDiv {
+  border-bottom: 1px solid #ccc;
+  line-height: 30px;
+  font-weight: bold;
+}
+.descDiv {
+  font-weight: bold;
+  color: #777;
+  font-size: 12px;
+  line-height: 30px;
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+}
+.imgDiv {
+  text-align: center;
+}
+.dialog-footer{
+  text-align: center;
+  margin-top: -40px;
 }
 </style>
