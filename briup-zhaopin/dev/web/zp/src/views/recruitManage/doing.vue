@@ -3,7 +3,7 @@
  * 招聘中页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-29 09:28:42
+ * @Last Modified time: 2019-12-29 10:50:18
  */
 <template>
   <div id="recruitDoing">
@@ -176,7 +176,6 @@
         </div>
       </el-dialog>
     </div>
-  {{showData}}
   </div>
 </template>
 
@@ -233,7 +232,6 @@ export default {
       doingData: [],
       ids: [],
       showData: {},
-      // value: "",
       jobsData: [],
       businessData: [],
       job: "",
