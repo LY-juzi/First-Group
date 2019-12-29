@@ -3,7 +3,7 @@
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-28 15:20:05
+ * @Last Modified time: 2019-12-29 08:38:57
  */
 <template>
   <div id="waiterList">
@@ -11,7 +11,7 @@
     {{statusData}} -->
     <!-- 搜索框 -->
     <div class="searchDiv">
-      <el-select @change="statusChange" size="mini" v-model="status" clearable placeholder="在线">
+      <el-select @change="statusChange" size="mini" v-model="status" clearable placeholder="状态">
         <el-option
           v-for="item in statusData"
           :key="item"
@@ -26,6 +26,22 @@
          :value="item">
          </el-option>
       </el-select>
+      <el-select
+       v-model="value"
+       multiple
+       filterable
+       remote
+       reserve-keyword
+       placeholder="请输入关键词"
+       :remote-method="remoteMethod"
+       :loading="loading" size="mini">
+      <el-option
+       v-for="item in customerData"
+       :key="item.value"
+       :label="item.label"
+       :value="item.value">
+      </el-option>
+  </el-select>
     </div>
     <!-- 列表框-->
     <div class="tableDiv">
@@ -73,11 +89,12 @@
 </template>
 
 <script>
-import { findAllCustomer,deleteById } from "@/api/customer-service.js";
+import { findAllCustomer,deleteById,findByStatus,findByGender} from "@/api/customer-service.js";
 import config from "@/utils/config.js";
 export default {
   data() {
     return {
+      
       //状态
       status: "",
       //性别
@@ -87,7 +104,7 @@ export default {
       //性别数组
       genderData: [],
       //客服数组
-      waiterData:[],
+      customerData:[],
       //当前页
       currentPage: 1,
       //每页条数
@@ -125,81 +142,67 @@ export default {
       this.$refs[formName].resetFields();
       this.editVisible = false;
     },
-    //保存
-    toSave(formName) {
-      this.$refs[formName].validate(async valid => {
-        if (valid) {
-          //通过验证
-          let province = this.currentBus.province;
-          // console.log(province);
-          // console.log(typeof province);
-          // console.log(+province);    NaN  8
-          //如果省份发生更改
-          if (+province) {
-            //将省份id处理为省份名字，过滤省份数组
-            let result = this.provinceData.filter(item => {
-              return item.id === +province;
-            })[0];
-            // result 是省份对象
-            this.currentBus.province = result.name;
-          }
-          //保存
-          try {
-            let res = await saveOrUpdateBusiness(this.currentBus);
-            if (res.status === 200) {
-              this.findAllBus();
-              this.editVisible = false;
-              config.successMsg(this, "修改成功");
-            } else {
-              config.errorMsg(this, "修改失败");
-            }
-          } catch (error) {
-            console.log(error);
-            config.errorMsg(this, "修改失败");
-          }
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    },
-    //模态框  省份发生改变
-    async dialogProChange(val) {
-      // console.log(val);
-      //重置城市下拉列表
-      this.currentBus.city = "";
-      //通过省份id获取城市
-      try {
-        let res = await findCityByProvinceId({ provinceId: val });
-        this.provinceCityData = res.data;
-      } catch (error) {
-        console.log(error);
-        config.errorMsg(this, "通过省份查找城市失败");
-      }
-    },
     // 页数发生改变
     pageChange(page) {
       this.currentPage = page;
     },
 
-    //城市发生改变
-    async cityChange(val) {
-      this.province = "";
-      this.industry = "";
-      this.scale = "";
+    //状态发生改变
+    async statusChange(val) {
+      this.gender = "";
       //val 是option的value值
+      console.log('-----',val);
       if (val) {
         try {
-          let res = await findByStatus({ city: val });
+          let res = await findByStatus({ status: val });
           this.customerData = res.data;
           this.currentPage = 1;
         } catch (error) {
-          config.errorMsg(this, "通过状态查找商家信息错误");
+          config.errorMsg(this, "通过状态查找客服信息错误");
         }
       } else {
         this.findAllCus();
       }
     },
+    //性别发生改变
+    async genderChange(val) {
+      this.status = "";
+      //val 是option的value值
+      if (val) {
+        try {
+          let res = await findByGender({ gender: val });
+          this.customerData = res.data;
+          this.currentPage = 1;
+        } catch (error) {
+          config.errorMsg(this, "通过性别查找客服信息错误");
+        }
+      } else {
+        this.findAllCus();
+      }
+    },
+
+    fenlei2 () {
+        const search =this.input;
+        if (search) {
+           // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
+           // 注意： filter() 不会对空数组进行检测。
+           // 注意： filter() 不会改变原始数组。
+           return this.customerData.filter(data => {
+           // some() 方法用于检测数组中的元素是否满足指定条件;
+             // some() 方法会依次执行数组的每个元素：
+            // 如果有一个元素满足条件，则表达式返回true , 剩余的元素不会再执行检测;
+             // 如果没有满足条件的元素，则返回false。
+             // 注意： some() 不会对空数组进行检测。
+             // 注意： some() 不会改变原始数组。
+             return Object.keys(data).some(key => {
+               // indexOf() 返回某个指定的字符在某个字符串中首次出现的位置，如果没有找到就返回-1；
+               // 该方法对大小写敏感！所以之前需要toLowerCase()方法将所有查询到内容变为小写。
+               return String(data[key]).toLowerCase().indexOf(search) > -1
+             })
+           })
+        }
+         return this.customerData;
+       },
     
     //查看
     toSee(row) {

@@ -3,7 +3,7 @@
  * 招聘完结页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-28 20:21:37
+ * @Last Modified time: 2019-12-29 08:53:50
  */
 <template>
   <div id="recruitFinish">
@@ -291,7 +291,6 @@ export default {
     },
     async toSee(row) {
       this.showData = row;
-      console.log(row.welfare);
       this.welfareList = row.welfare.split(",");
       try {
         let business = await findBusinessById({ id: this.showData.businessId });

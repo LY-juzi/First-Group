@@ -3,12 +3,12 @@
  * 招聘中页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: wuhuilan
- * @Last Modified time: 2019-12-28 20:32:19
+ * @Last Modified time: 2019-12-29 09:28:42
  */
 <template>
   <div id="recruitDoing">
     <el-select v-model="job" placeholder="职位类型" class="select" @change="changeJob">
-      <el-option label="职位类型" value></el-option>
+      <el-option label="职位类型" value=""></el-option>
       <el-option v-for="(item,index) in jobsData" :key="index" :label="item" :value="item"></el-option>
     </el-select>
     <el-row class="btns">
@@ -126,12 +126,11 @@
         <el-form-item label="职业标签" :label-width="formLabelWidth" prop="welfare">
           <el-select
            style="width:100%"
-            v-model="showData.welfare"
+            v-model="showData.welfareDialog"
             multiple
             filterable
             allow-create
-            default-first-option
-            placeholder="请选择职业标签"
+            :placeholder="showData.welfare"
           >
             <el-option v-for="item in allWelfare" :key="item" :label="item" :value="item"></el-option>
           </el-select>
@@ -196,6 +195,7 @@ import { findAllWelfare } from "@/api/welfare";
 export default {
   data() {
     return {
+      welfareDialog:[],
       rules: {
         contactPhone: [
           { required: true, message: "请输入联系人电话", trigger: "blur" }
@@ -233,7 +233,7 @@ export default {
       doingData: [],
       ids: [],
       showData: {},
-      value: "",
+      // value: "",
       jobsData: [],
       businessData: [],
       job: "",
@@ -275,6 +275,11 @@ export default {
           delete this.showData.endTime;
           delete this.showData.publishTime;
           this.showData.status = "审核通过";
+          if(this.showData.welfareDialog){
+             this.showData.welfare = this.showData.welfareDialog.toString();
+          }
+
+          this.showData.welfareDialog = [];
           try {
             await saveOrUpdateEmployment(this.showData);
             config.successMsg(this, "操作成功");
