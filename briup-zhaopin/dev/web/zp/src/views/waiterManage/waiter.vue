@@ -3,10 +3,10 @@
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 13:45:07
+ * @Last Modified time: 2019-12-29 14:18:40
  */
 <template>
-  <div id="waiterList">
+  <div id="businessList">
     <!-- {{waiterData}}
     {{statusData}} -->
     <!-- 搜索框 -->
@@ -46,7 +46,7 @@
     <div class="tableDiv">
       <el-table
         ref="multipleTable"
-        :data="customerData"
+        :data="customerList"
         tooltip-effect="dark"
         style="width: 100%"
         @selection-change ="selectionChange" >
@@ -124,7 +124,7 @@ export default {
   },
   computed: {
     //分页数据
-    waiterList() {
+    customerList() {
       let temp = [...this.customerData];
       let page = this.currentPage;
       let pageSize = config.pageSize;
