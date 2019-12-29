@@ -444,10 +444,10 @@ export default {
               config.successMsg(this, "删除成功");
               this.findAllBus();
             } else {
-              config.errorMsg(this, "删除失败");
+              config.errorMsg(this, "删除失败1");
             }
           } catch (error) {
-            config.errorMsg(this, "删除失败");
+            config.errorMsg(this, "删除失败2");
           }
         })
         .catch(() => {

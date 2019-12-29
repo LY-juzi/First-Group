@@ -3,7 +3,7 @@
  * 配置文件，项目中的通用方法和地址
  * @Date: 2019-12-22 19:09:29 
  * @Last Modified by: frxi
- * @Last Modified time: 2019-12-28 20:19:04
+ * @Last Modified time: 2019-12-28 20:52:25
  */
 import Highcharts from 'highcharts';
 /* 设置后台接口基础路径 */
