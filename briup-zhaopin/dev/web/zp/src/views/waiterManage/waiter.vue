@@ -3,10 +3,10 @@
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 12:38:06
+ * @Last Modified time: 2019-12-29 14:18:40
  */
 <template>
-  <div id="waiterList">
+  <div id="businessList">
     <!-- {{waiterData}}
     {{statusData}} -->
     <!-- 搜索框 -->
@@ -35,9 +35,9 @@
       <!-- 按关键字搜索 -->
      <div class="search">
           <el-input clearable @change="inputChange" placeholder="请输入" v-model="inputvalue" size="mini">
-            <el-select style="width:80px" v-model="searchType" slot="prepend" placeholder="关键字" size="mini">
-              <el-option label="用户名" value="username"></el-option >
-              <el-option label="姓名" value="realname"></el-option>
+            <el-select style="width:100px" v-model="searchType" slot="prepend" placeholder="关键字" size="mini">
+              <el-option label="用户ID" value="id"></el-option >
+              <el-option label="用户名" value="username"></el-option>
             </el-select>
             <el-button @click="tofind(inputvalue)" slot="append" icon="el-icon-search"></el-button>
           </el-input>
@@ -46,7 +46,7 @@
     <div class="tableDiv">
       <el-table
         ref="multipleTable"
-        :data="customerData"
+        :data="customerList"
         tooltip-effect="dark"
         style="width: 100%"
         @selection-change ="selectionChange" >
@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { findAllCustomer,deleteById,findByStatus,findByGender} from "@/api/customer-service.js";
+import { findAllCustomer,deleteById,findByStatus,findByGender,findById,findByUsername} from "@/api/customer-service.js";
 import config from "@/utils/config.js";
 export default {
   data() {
@@ -118,11 +118,13 @@ export default {
       editVisible: false,
       //修改模态框标题名称所占宽度
       formLabelWidth: "80px",
+      searchType:'',
+      inputvalue:''
     };
   },
   computed: {
     //分页数据
-    waiterList() {
+    customerList() {
       let temp = [...this.customerData];
       let page = this.currentPage;
       let pageSize = config.pageSize;
@@ -130,6 +132,43 @@ export default {
     }
   },
   methods: {
+        //改变关键字选项
+    inputChange(inputvalue){
+      this.findAllCustomer();
+    },
+    //搜索功能
+    async tofind(inputvalue){
+      if(this.searchType === "username"){
+        if(inputvalue){
+          
+          try {
+            let res = await findByUsername({username:inputvalue});
+            this.customerData = res.data;
+            this.currentPage = 1;
+          } catch (error) {
+            config.errorMsg(this,'没有相关信息');
+          }
+        }
+        else{
+          this.findAllCustomer();
+        }
+      }
+      else{
+        if(inputvalue){
+          try {
+            let res = await findById({id:inputvalue});
+            this.customerData = res.data;
+            this.currentPage = 1;
+          } catch (error) {
+            config.errorMsg(this,'没有相关信息');
+          }
+        }
+        else{
+          this.findAllCustomer();
+        }
+      }
+      
+    },
     //右上角，模态框关闭之前
     beforeClose() {
       this.$refs["ruleForm"].resetFields();

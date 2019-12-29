@@ -3,36 +3,36 @@
  * 职位管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: luy
- * @Last Modified time: 2019-12-29 11:26:41
+ * @Last Modified time: 2019-12-29 15:31:54
  */
 <template>
   <div id="modulePosition">
-
-    <!-- <el-row>
-        <el-button type="danger" size="small" id="add" round>添加职位</el-button>
+    <el-row>
+        <el-button @click="toAdd()" type="danger" size="small" id="add" round>添加职位</el-button>
     </el-row>
 
     <div class="wrapDiv" v-for="item in statusData" :key="item.id">
       {{item.name}}
       <div class="jobDiv">
-        <span v-for="cityitem in item.city" :key="cityitem.id">{{cityitem.name}}</span>
-      </div>
+        <span v-for="jobitem in item.job" :key="jobitem.id">{{jobitem.name}}&nbsp;&nbsp;&nbsp;&nbsp;</span>
 
-      <div class="cityDataList addButDiv" v-if="item.butStatu">
-          <el-button type="text" @click="addCity(item)">添加</el-button>
+        <div class="jobDataList addButDiv" v-if="item.butStatu">
+          <el-button type="text" @click="addjob(item)">添加</el-button>
+        </div>
+        <div class="jobDataList inputDiv" v-else>
+          <input v-model="jobName" type="text" placeholder="请输入职位名称" >
+          <button @click="jobDataAdd(item)">添加</button>
+        </div>
+
       </div>
-      <div class="cityDataList inputDiv" v-else>
-        <input v-model="cityName" type="text" >
-        <button @click="cityDataAdd(item)">添加<tton>
-      </div>
-    </div>
+    </div> 
 
     <el-dialog title="创建新的行业类型" :visible.sync="addJobVisible" width="40%" :before-close="beforeClose">
-      <el-form :model="currentPro" :rules="rules" ref="ruleForm">
+      <el-form :model="currentJob" :rules="rules" ref="ruleForm">
         <el-row :gutter="20">
-          < prop链接的是下面data中的rules校验规则 -->
-          <!-- <el-form-item prop="name" label="行业类型：" :label-width="formLabelWidth">
-            <el-input v-model="currentPro.name"></el-input>
+          <!-- prop链接的是下面data中的rules校验规则 -->
+          <el-form-item prop="name" label="行业类型：" :label-width="formLabelWidth">
+            <el-input v-model="currentJob.name"></el-input>
           </el-form-item>
         </el-row>
       </el-form>
@@ -41,23 +41,14 @@
         <el-button size="mini" @click="toCancel('ruleForm')">取 消</el-button>
         <el-button size="mini" type="primary" @click="toSave('ruleForm')">确 定</el-button>
       </div>
-    </el-dialog> --> -->
+    </el-dialog>
 
   </div>
 </template>
 
 <script>
-import {
-  saveOrUpdateJobType,
-  findAllJobType,
-  findJobTypeById
-} from "@/api/job-type-controller.js";
-import {
-  findAllJobs,
-  findJobsById,
-  findJobsByStatus,
-  saveOrUpdateJobs
-} from "@/api/job-controller.js";
+import {  saveOrUpdateJobType,  findAllJobType,  findJobTypeById} from "@/api/job-type-controller.js";
+import {  findAllJobs,  findJobsById,  findJobsByStatus,  saveOrUpdateJobs} from "@/api/job-controller.js";
 import config from "@/utils/config.js";
 
 export default {
@@ -65,29 +56,43 @@ export default {
     return {
       statusData: [],
       jobData: [],
-      cityName: "请输入行业名称",
+      jobName: "",
 
       // 模态框的显示与否
       addJobVisible: false,
       formLabelWidth: "100px",
-      currentPro: {},
+      currentJob: {},
 
       ruleForm: {
-        provinceName: "",
-        cityName: ""
+        jobType: "",
       },
       rules: {
-        provinceName: [
-          { required: true, message: "请输入省份名字", trigger: "blur" }
-        ],
-        cityName: [
-          { required: true, message: "请输入城市名字", trigger: "blur" }
+        jobType: [
+          { required: true, message: "请输入行业类型", trigger: "blur" }
         ]
       }
     };
   },
   computed: {},
   methods: {
+
+    //添加城市按钮
+    async addjob(val){
+      val.butStatu = false;
+    },
+    //添加职业名称
+    async jobDataAdd(val){
+      try {
+        let res = await saveOrUpdateJobs({jobTypeId:val.id,name:this.jobName,status:val.name});
+        this.findAllType();
+        val.butStatu = true;
+        config.successMsg(this,"添加成功");
+        this.jobName = '请输入城市名称';
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     //右上角，模态框关闭之前
     beforeClose() {
       this.$refs["ruleForm"].resetFields();
@@ -100,36 +105,23 @@ export default {
       this.addJobVisible = false;
     },
 
-    // 新增省份的保存确定
+    // 新增行业类型的保存确定
     toSave(formName) {
       this.$refs[formName].validate(async valid => {
         if (valid) {
-          // 通过验证
-          // 将省份id处理成省份名字再保存
-          let province = this.currentPro.name;
-          // 如果省份发生更改（不改变省份的话，它的类型本来就是字符串）
-          // 汉字转是NAN，数字类型是number
-          if (+province) {
-            // 将省份id通过过滤省份数组处理为省份名字再保存
-            // [0]拿省份对象
+          let job = this.currentJob.name;
+          if (+job) {
             let result = this.statusData.filter(item => {
-              return item.id === +province;
+              return item.id === +job;
             })[0];
-            // result是省份对象
-            // 修改的对象是数据模型里的，会触发页面重新渲染。但这里修改的是对象中的属性，所以不会重新渲染。若是重新修改了对象，则会触发
-            this.currentPro.name = result.name;
+            this.currentJob.name = result.name;
           }
           // 保存
           try {
-            let res = await saveOrUpdateProvince(this.currentPro);
+            let res = await saveOrUpdateJobType(this.currentJob);
             if (res.status === 200) {
-              console.log(1);
-              this.findAllPro();
-              console.log(2);
-
+              this.findAllType();
               this.addJobVisible = false;
-              console.log(2);
-
               config.successMsg(this, "保存成功");
             } else {
               config.errorMsg(this, "保存失败");
@@ -145,31 +137,24 @@ export default {
       });
     },
 
-    // 新增省份
+    // 新增行业类型
     toAdd() {
       this.addJobVisible = true;
-      this.currentPro = {};
+      this.currentJob = {};
     },
 
-    // 查找所有省份
-    async findAllPro() {
-      let res = await findAllProvince();
-      this.statusData = [...res.data];
-    },
-
-    // 查找所有城市
-    async findCity() {
-      let val = await findAllJobs();
-      this.jobData = val.data;
-      let temp = [...this.statusData];
+    // 查找所有行业类型
+    async findAllType() {
+      let res = await findAllJobType();
+      let temp = [...res.data];
       temp.forEach(async item => {
         //item是对象
-        let provinceId = item.id;
+        let jobName = item.name;
         try {
-          let res = await findJobTypeById({ provinceId: provinceId });
-          // item.butStatu = 'true';
+          let res = await findJobsByStatus({ staus: jobName });
+          item.butStatu = true;
           //tStatu为true则显示添加按钮，false显示输入框
-          item.city = res.data;
+          item.job = res.data;
         } catch (error) {
           config.errorMsg(this, "查找错误");
         }
@@ -177,12 +162,11 @@ export default {
       // 超时调用
       setTimeout(() => {
         this.statusData = temp;
-      }, 2000);
+      }, 1000);
     }
   },
   created() {
-    this.findAllPro();
-    this.findCity();
+    this.findAllType();
   },
   mounted() {}
 };
@@ -191,7 +175,7 @@ export default {
 #modulePosition{
   #add{
     position: relative;
-    left: 700px;
+    left: 600px;
     margin: 10px
   }
 }
@@ -206,7 +190,7 @@ export default {
   margin: 10px;
   padding: 10px;
 }
-.cityDataList{
+.jobDataList{
   display: inline;
   margin-right: 10px;
 }
